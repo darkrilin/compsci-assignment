@@ -25,7 +25,7 @@ for i in range(len(stufflist)):
     for j in wave_timestamp:
         if j>=stime:
             if j<=float(stime)+0.05:
-                pops += ["%.3f" % ((j[0]-float(stime))*1000)]
+                pops += [float("%.3f" % ((j[0]-float(stime))*1000))]
                 #print((j[0]-float(stime))*1000)
             else:
                 break
