@@ -1,14 +1,14 @@
 import scipy.io as sio
 
-all_659602 = sio.loadmat('659602_rec03_all.mat')
+file = sio.loadmat('659605_rec03_all.mat')
 
-#print(all_659602['__header__'])
-print(all_659602['__header__'])
-print(all_659602.keys())
+#print(file['__header__'])
+print(file['__header__'])
+print(file.keys())
 
-wave_timestamp = all_659602['Sch_wav'][0][0][4]
-stim_timestamp = all_659602['StimTrig'][0][0][4]
-stim_amplitude = all_659602['StimTrig'][0][0][5]
+wave_timestamp = file['Sch_wav'][0][0][4]
+stim_timestamp = file['StimTrig'][0][0][4]
+stim_amplitude = file['StimTrig'][0][0][5]
 
 stufflist = []
 
