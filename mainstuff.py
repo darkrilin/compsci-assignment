@@ -8,4 +8,5 @@ for i in sortedvals:
     else:
         experiment_group[i[1]-1] = i
 
-print(experiment_group)
+for i in experiment_group:
+    print(i)
