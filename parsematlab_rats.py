@@ -35,8 +35,3 @@ def extractmatlab(filename):
     # FORMAT OF ITEMS IN SORTEDVALS:
     # [stim timestamp, stim amplitude, [list of neurons firing within 50ms of stim]]
     return sortedvals
-
-if __name__ == '__main__':
-    data_extract = extractmatlab('659605_rec03_all.mat')
-    for i in data_extract:
-        print(i)
