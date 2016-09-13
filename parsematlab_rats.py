@@ -11,10 +11,12 @@ def extractmatlab(filename):
     randomvals = []
     sortedvals = []
 
-    for i in range(len(stim_timestamp)): # Concatenating stimulus timestamp with amplitude
+    # Concatenating stimulus timestamp with amplitude
+    for i in range(len(stim_timestamp)):
         randomvals += [[float("%.6f" % stim_timestamp[i][0]), stim_amplitude[i][0]]]
 
-    for i in range(len(randomvals)): # Calculate neuron fires within 50ms of trigger, add to list
+    # Calculate neuron fires within 50ms of trigger, add to list
+    for i in range(len(randomvals)):
         stime = randomvals[i][0]
         pops = []
         for j in wave_timestamp:
@@ -25,6 +27,7 @@ def extractmatlab(filename):
                     break
         randomvals[i] += [pops]
 
+    # Sort batches of data based on amplitude
     experimentbatch = [[]]*10
     for i in range(len(randomvals)):
         if randomvals[i][1] == 62:
