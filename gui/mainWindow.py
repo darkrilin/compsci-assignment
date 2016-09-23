@@ -1,85 +1,86 @@
 import wx, wx.html
 import sys
 
-class HtmlWindow(wx.html.HtmlWindow):
-    def __init__(self, parent, id, size=(600,400)):
-        wx.html.HtmlWindow.__init__(self,parent, id, size=size)
-        if "gtk2" in wx.PlatformInfo:
-            self.SetStandardFonts()
 
-    def OnLinkClicked(self, link):
-        wx.LaunchDefaultBrowser(link.GetHref())
-
-class AboutBox(wx.Dialog):
+class MainWindow(wx.Frame):
     def __init__(self):
-        wx.Dialog.__init__(self, None, -1, "About <<project>>",
-            style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|wx.RESIZE_BORDER|
-                wx.TAB_TRAVERSAL)
-        hwin = HtmlWindow(self, -1, size=(400,200))
-        vers = {}
-        vers["python"] = sys.version.split()[0]
-        vers["wxpy"] = wx.VERSION_STRING
-        hwin.SetPage(aboutText % vers)
-        btn = hwin.FindWindowById(wx.ID_OK)
-        irep = hwin.GetInternalRepresentation()
-        hwin.SetSize((irep.GetWidth()+25, irep.GetHeight()+10))
-        self.SetClientSize(hwin.GetSize())
-        self.CentreOnParent(wx.BOTH)
-        self.SetFocus()
+        wx.Frame.__init__(self, None, title="Neuroscience Graph Maker", pos=(150,150), size=(1200,700))
 
-class Frame(wx.Frame):
-    def __init__(self, title):
-        wx.Frame.__init__(self, None, title=title, pos=(150,150), size=(350,200))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self.InitUI()
 
-class MainWindow (wx.Frame):
-    def __init__(self, title):
-        wx.Frame.__init__(self, None, title=title, pos=(150,150), size=(350,200))
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
+    def InitUI(self):
+        # Create the status bar
+        self.CreateStatusBar()
 
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        m_exit = menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Close window and exit program.")
-        self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
-        menuBar.Append(menu, "&File")
-        menu = wx.Menu()
-        m_about = menu.Append(wx.ID_ABOUT, "&About", "Information about this program")
-        self.Bind(wx.EVT_MENU, self.OnAbout, m_about)
-        menuBar.Append(menu, "&Help")
-        self.SetMenuBar(menuBar)
+        self.InitMenuBar()
 
-        self.statusbar = self.CreateStatusBar()
+        # Top level frame stuff
+        self.panel = wx.Panel(self)
+        self.Centre()
 
-        panel = wx.Panel(self)
-        box = wx.BoxSizer(wx.VERTICAL)
+    def InitMenuBar(self):
+        # Menu Bar Stuff
+        self.MenuBar = wx.MenuBar()
 
-        m_text = wx.StaticText(panel, -1, "Hello World!")
-        m_text.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
-        m_text.SetSize(m_text.GetBestSize())
-        box.Add(m_text, 0, wx.ALL, 10)
+        # File Menu
+        self.FileMenu = wx.Menu()
 
-        m_close = wx.Button(panel, wx.ID_CLOSE, "Close")
-        m_close.Bind(wx.EVT_BUTTON, self.OnClose)
-        box.Add(m_close, 0, wx.ALL, 10)
+        self.NewItem = wx.MenuItem(self.FileMenu, wx.ID_NEW, help="Create a new project")
+        self.FileMenu.AppendItem(self.NewItem)
 
-        panel.SetSizer(box)
-        panel.Layout()
+        self.OpenItem = wx.MenuItem(self.FileMenu, wx.ID_OPEN, help="Open an existing project")
+        self.FileMenu.AppendItem(self.OpenItem)
 
-    def OnClose(self, event):
-        dlg = wx.MessageDialog(self,
-            "Do you really want to close this application?",
-            "Confirm Exit", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
-        result = dlg.ShowModal()
-        dlg.Destroy()
-        if result == wx.ID_OK:
-            self.Destroy()
+        self.SaveItem = wx.MenuItem(self.FileMenu, wx.ID_SAVE, help="Save the current project")
+        self.FileMenu.AppendItem(self.SaveItem)
 
-    def OnAbout(self, event):
-        dlg = AboutBox()
-        dlg.ShowModal()
-        dlg.Destroy()
+        self.SaveAsItem = wx.MenuItem(self.FileMenu, wx.ID_SAVEAS, help="Save the current project with a different filename")
+        self.FileMenu.AppendItem(self.SaveAsItem)
 
-app = wx.App(redirect=True)
-top = MainWindow("Main Window")
-top.Show()
+        self.FileMenu.AppendSeparator()
+
+        self.SettingsItem = wx.MenuItem(self.FileMenu, wx.ID_ANY, text="Settings", help="Edit Application Settings")
+        self.FileMenu.AppendItem(self.SettingsItem)
+
+        self.FileMenu.AppendSeparator()
+
+        self.ImportItem = wx.MenuItem(self.FileMenu, wx.ID_ANY, text="Import", help="Import MATLAB data")
+        self.FileMenu.AppendItem(self.ImportItem)
+
+        self.ExportAsItem = wx.MenuItem(self.FileMenu, wx.ID_ANY, text="Export as...", help="Open the export dialog to export data")
+        self.FileMenu.AppendItem(self.ExportAsItem)
+
+        self.FileMenu.AppendSeparator()
+
+        self.PrintItem = wx.MenuItem(self.FileMenu, wx.ID_PRINT, help="Print the data")
+        self.FileMenu.AppendItem(self.PrintItem)
+
+        self.FileMenu.AppendSeparator()
+
+        self.ExitItem = wx.MenuItem(self.FileMenu, wx.ID_EXIT, text="Exit")
+        self.FileMenu.AppendItem(self.ExitItem)
+
+        self.MenuBar.Append(self.FileMenu, "File")
+
+        # Edit Menu
+        self.EditMenu = wx.Menu()
+
+        self.UndoItem = wx.MenuItem(self.EditMenu, wx.ID_UNDO)
+        self.EditMenu.AppendItem(self.UndoItem)
+
+        self.MenuBar.Append(self.EditMenu, "Edit")
+
+        self.SetMenuBar(self.MenuBar)
+        self.Bind(wx.EVT_MENU, self.OnQuit, self.ExitItem)
+
+    def OnQuit(self, e):
+        self.Close()
+
+class MyApp(wx.App):
+    def OnInit(self):
+        main = MainWindow()
+        main.Show()
+        return True
+
+app = MyApp(0)
 app.MainLoop()
