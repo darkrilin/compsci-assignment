@@ -37,4 +37,5 @@ def extractmatlab(filename):
 
     # FORMAT OF ITEMS IN SORTEDVALS:
     # [stim timestamp, stim amplitude, [list of neurons firing within 50ms of stim]]
+    # WITH ITEMS OF [62] SEPARATING DATASETS
     return sortedvals
