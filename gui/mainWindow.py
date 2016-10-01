@@ -1,6 +1,12 @@
 import wx, wx.html
 import sys
+from numpy import arange, sin, pi
+import matplotlib
+matplotlib.use('WXAgg')
 
+from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+from matplotlib.figure import Figure
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -14,7 +20,9 @@ class MainWindow(wx.Frame):
         # Initialise the menu bar
         self.InitMenuBar()
         # Top level frame stuff
-        self.panel = wx.Panel(self)
+        self.panel = CanvasPanel(self)
+        self.panel.draw()
+
         self.Centre()
 
     def InitMenuBar(self):
@@ -91,11 +99,42 @@ class MainWindow(wx.Frame):
         # View Menu
         self.ViewMenu = wx.Menu()
 
-        self.ZoomInItem = wx.MenuItem(self.ViewMenu, wx.ID_ZOOM_IN)
+        self.ZoomInItem = wx.MenuItem(self.ViewMenu, wx.ID_ZOOM_IN, text='&ZoomIn\tCtrl++', help="Zoom In")
         self.ViewMenu.AppendItem(self.ZoomInItem)
 
-        self.ZoomOutItem = wx.MenuItem(self.ViewMenu, wx.ID_ZOOM_OUT)
+        self.ZoomOutItem = wx.MenuItem(self.ViewMenu, wx.ID_ZOOM_OUT, text='&ZoomOut\tCtrl+-', help="Zoom Out")
         self.ViewMenu.AppendItem(self.ZoomOutItem)
+
+        self.ViewMenu.AppendSeparator()
+
+        self.TenPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&10%", help="Set Zoom at 10%")
+        self.ViewMenu.AppendItem(self.TenPercentItem)
+
+        self.TwentyFivePercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&25%", help="Set Zoom at 25%")
+        self.ViewMenu.AppendItem(self.TwentyFivePercentItem)
+
+        self.FiftyPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&50%", help="Set Zoom at 50%")
+        self.ViewMenu.AppendItem(self.FiftyPercentItem)
+
+        self.HundredPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&100%", help="Set Zoom at 100%")
+        self.ViewMenu.AppendItem(self.HundredPercentItem)
+
+        self.TwoHundredPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&200%", help="Set Zoom at 200%")
+        self.ViewMenu.AppendItem(self.TwoHundredPercentItem)
+
+        self.FourHundredPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&400%", help="Set Zoom at 400%")
+        self.ViewMenu.AppendItem(self.FourHundredPercentItem)
+
+        self.EightHundredPercentItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&800%", help="Set Zoom at 800%")
+        self.ViewMenu.AppendItem(self.EightHundredPercentItem)
+
+        self.ZoomFitItem = wx.MenuItem(self.ViewMenu, wx.ID_ZOOM_FIT, help="Automatically set the Zoom level based on the graph size.")
+        self.ViewMenu.AppendItem(self.ZoomFitItem)
+
+        self.ViewMenu.AppendSeparator()
+
+        self.SetZoomItem = wx.MenuItem(self.ViewMenu, wx.ID_ANY, text="&Set Zoom", help="Set Zoom Manually")
+        self.ViewMenu.AppendItem(self.SetZoomItem)
 
         self.MenuBar.Append(self.ViewMenu, "&View")
 
@@ -117,6 +156,17 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnCopy, self.CopyItem)
         self.Bind(wx.EVT_MENU, self.OnPaste, self.PasteItem)
         self.Bind(wx.EVT_MENU, self.OnDelete, self.DeleteItem)
+        self.Bind(wx.EVT_MENU, self.OnZoomIn, self.ZoomInItem)
+        self.Bind(wx.EVT_MENU, self.OnZoomOut, self.ZoomOutItem)
+        self.Bind(wx.EVT_MENU, self.OnTenPercent, self.TenPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnTwentyFivePercent, self.TwentyFivePercentItem)
+        self.Bind(wx.EVT_MENU, self.OnFiftyPercent, self.FiftyPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnHundredPercent, self.HundredPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnTwoHundredPercent, self.TwoHundredPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnFourHundredPercent, self.FourHundredPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnEightHundredPercent, self.EightHundredPercentItem)
+        self.Bind(wx.EVT_MENU, self.OnZoomFit, self.ZoomFitItem)
+        self.Bind(wx.EVT_MENU, self.OnSetZoom, self.SetZoomItem)
 
     def OnNew(self, e):
         print("New")
@@ -162,6 +212,55 @@ class MainWindow(wx.Frame):
 
     def OnDelete(self, e):
         print("Delete")
+
+    def OnZoomIn(self, e):
+        print("ZoomIn")
+
+    def OnZoomOut(self, e):
+        print("ZoomOut")
+
+    def OnTenPercent(self, e):
+        print("TenPercent")
+
+    def OnTwentyFivePercent(self, e):
+        print("TwentyFivePercent")
+
+    def OnFiftyPercent(self, e):
+        print("FiftyPercent")
+
+    def OnHundredPercent(self, e):
+        print("HundredPercent")
+
+    def OnTwoHundredPercent(self, e):
+        print("TwoHundredPercent")
+
+    def OnFourHundredPercent(self, e):
+        print("FourHundredPercent")
+
+    def OnEightHundredPercent(self, e):
+        print("EightHundredPercent")
+
+    def OnZoomFit(self, e):
+        print("ZoomFit")
+
+    def OnSetZoom(self, e):
+        print("SetZoom")
+
+class CanvasPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+        self.figure = Figure()
+        self.axes = self.figure.add_subplot(111)
+        self.canvas = FigureCanvas(self, -1, self.figure)
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas, 1, wx.LEFT | wx.TOP | wx.GROW)
+        self.SetSizer(self.sizer)
+        self.Fit()
+
+    def draw(self):
+        t = arange(0.0, 3.0, 0.01)
+        s = sin(2 * pi * t)
+        self.axes.plot(t, s)
 
 class MyApp(wx.App):
     def OnInit(self):

@@ -1,0 +1,64 @@
+@font-face {
+    font-family: Montserrat;
+    src: url(montserrat/Montserrat-Regular.otf);
+}
+
+body{
+    background-image: url(https://plot.ly/static/img/squarebanner.png);
+    background-size: cover;
+    color:#69738a;
+    font-family: 'Open Sans',verdana,arial,sans-serif;
+}
+
+.center{
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#header{
+    text-align:center;
+    font-weight: 600;
+    font-size: 32px;
+}
+
+
+.importbtn {
+    background-color: #447bdc;
+    color: white;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    min-width: 300px;
+    min-height: 50px;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+
+.submitbtn {
+    background-color: #447bdc;
+    color: white;
+    padding: 14px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    min-width: 500px;
+    min-height: 50px;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius: 5px;
+    text-transform: uppercase;
+}
+
+.importbtn:hover, .importbtn:focus {
+    background-color: #2d56aa;
+}
+
+.submitbtn:hover, .submitbtn:focus {
+    background-color: #2d56aa;
+}
