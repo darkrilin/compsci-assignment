@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
+from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
 import parsematlab_rats
 import os
@@ -11,8 +11,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
 def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 def returnSortedFile(filename):
     sortedvals = parsematlab_rats.extractmatlab(filename)
@@ -39,4 +38,4 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(app.config['UPLOAD_FOLDER'] + filename)
             return str(returnSortedFile(app.config['UPLOAD_FOLDER'] + filename))
-        return "Couldn't upload file"
+        return redirect("/")

@@ -10,6 +10,12 @@
         $(document).ready(function(){
             // jQuery code goes here
             // Check when file changes
+            var ALLOWED_EXTENSIONS = ['.mat'];
+
+            function allowed_file(filename){
+                return filename.includes(".") && ALLOWED_EXTENSIONS.includes("." + filename.split(".").slice(-1));
+            }
+
             $("#theFile").change(function(){
                 if (this.value){
                     $("#filename").text(this.value.split('\\').pop());
@@ -26,7 +32,13 @@
             // You will need to give the file to Riley's python file
             $(".submitbtn").on("click", function(){
                 if($("#theFile").get(0).files.length != 0){
-                    $("#target").submit();
+                    if(allowed_file($("#theFile").get(0).files[0].name)){
+                    console.log("worked");
+                        $("#target").submit();
+                    }
+                    else{
+                        alert("Please select a file with the extension '.mat'");
+                    }
                 }
                 else{
                     alert("Please select a file");
