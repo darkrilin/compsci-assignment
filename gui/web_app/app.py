@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, request, redirect
 from werkzeug.utils import secure_filename
 import parsematlab_rats
+import mainstuff
 import os
 
 UPLOAD_FOLDER = 'uploads/'
@@ -37,5 +38,6 @@ def upload_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            return str(returnSortedFile(app.config['UPLOAD_FOLDER'] + filename))
+            mainstuff.plot_with_plotly(app.config['UPLOAD_FOLDER'] + filename)
+            return "succesfully uploaded"
         return redirect("/")
