@@ -3,19 +3,31 @@
     src: url(montserrat/Montserrat-Regular.otf);
 }
 
-body{
+html,body{
     background-image: url(https://plot.ly/static/img/squarebanner.png);
     background-size: cover;
     color:#69738a;
     font-family: 'Open Sans',verdana,arial,sans-serif;
+    height: 100%;
+    margin: 0;
+}
+
+.box{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
 }
 
 .center{
     margin: 0;
     position: absolute;
-    top: 50%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+#importfilecontainer{
+    flex: 1 1 auto;
 }
 
 #header{
@@ -55,10 +67,11 @@ body{
     text-transform: uppercase;
 }
 
-.importbtn:hover, .importbtn:focus {
+.importbtn:hover {
     background-color: #2d56aa;
 }
 
-.submitbtn:hover, .submitbtn:focus {
+.submitbtn:hover {
     background-color: #2d56aa;
 }
+

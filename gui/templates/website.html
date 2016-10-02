@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neuroscience Graph Maker</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        // jQuery Ready Up
+        $(document).ready(function(){
+            // jQuery code goes here
+            // Check when file changes
+            $("#theFile").change(function(){
+                if (this.value){
+                    $("#filename").text(this.value.split('\\').pop());
+                }
+                else{
+                    $("#filename").text("No file chosen");
+                }
+            });
+            // Open file dialog when import is pressed
+            $(".importbtn").click(function(){
+                $("#theFile").trigger("click");
+            });
+            // Submit - read file and generate the chart from that data.
+            // You will need to give the file to Riley's python file
+            $(".submitbtn").on("click", function(){
+                if($("#theFile").get(0).files.length != 0){
+                    $("#target").submit();
+                }
+                else{
+                    alert("Please select a file");
+                }
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <div class="box">
+        <div id="header" style="flex: 0 1 auto"><h2>Neuroscience Graph Maker</h2></div>
+        <div id="importfilecontainer" style="position: relative; height: 100%; display:flex; flex-flow:column;">
+            <div class="center">
+                <div style="text-align:center;">
+                    <div style="display:inline-block;">
+                        <div>
+                            <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100;">
+                                <button class="importbtn" style="">Import MATLAB File</button>
+                            </div>
+                        </div>
+                        <div style="position:relative; text-align:center;">
+                            <p id="filename">No file chosen</p>
+                        </div>
+                    </div>
+                </div>
+                <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100; top:50px;">
+                    <button class="submitbtn" style="">Generate Chart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form id="target" action="/upload" enctype="multipart/form-data" method="post">
+        <input id="theFile" name="file" type="file" accept=".mat" style="position: fixed; top: -100em">
+    </form>
+</body>
+</html>
