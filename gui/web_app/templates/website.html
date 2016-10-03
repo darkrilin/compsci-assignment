@@ -13,6 +13,9 @@
             // Check when file changes
             var ALLOWED_EXTENSIONS = ['.mat'];
 
+            $("#uploadbox").hide();
+            $("#greyout").hide();
+
             function allowed_file(filename){
                 return filename.includes(".") && ALLOWED_EXTENSIONS.includes("." + filename.split(".").slice(-1));
             }
@@ -35,6 +38,8 @@
                 if($("#theFile").get(0).files.length != 0){
                     if(allowed_file($("#theFile").get(0).files[0].name)){
                     console.log("worked");
+                        $("#uploadbox").show();
+                        $("#greyout").show();
                         $("#target").submit();
                     }
                     else{
@@ -50,10 +55,14 @@
     </script>
 </head>
 <body>
+    <div id="greyout" style="position:fixed; height:100%; width:100%; background-color:rgba(0, 0, 0, 0.9); z-index:999;"></div>
+    <div id="uploadbox" class="center" style="background-color:LightGrey; box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);">
+        <p style="position:absolute; margin:auto; top:50%; left:50%; transform:translate(-50%, -50%);">Uploading File...</p>
+    </div>
     <div class="box">
         <div id="header" style="flex: 0 1 auto"><h2>Neuroscience Graph Maker</h2></div>
         <div id="importfilecontainer" style="position: relative; height: 100%; display:flex; flex-flow:column;">
-            <div class="center">
+            <div class="centerpretty">
                 <div style="text-align:center;">
                     <div style="display:inline-block;">
                         <div>
