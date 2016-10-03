@@ -1,14 +1,19 @@
 import parsematlab_rats
 import plotly.plotly as py
 import plotly.graph_objs as go
-from os import path, makedirs
+import os.path, os.getcwd, os.makedirs
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+
+def ensure_dir(f):
+    d = os.path.dirname(os.getcwd() + f)
+    if not os.path.exists(d):
+        os.makedirs(d)
 
 def plot_with_plotly(filename):
     files = [filename]
     trace = {}
 
-    for filename in files: #allfiles:
+    for filename in files:
         sortedvals = parsematlab_rats.extractmatlab(filename)
 
         cheesarinoes = []

@@ -17,7 +17,7 @@ allfiles = ['659601_rec03_all.mat',
 files = ['659601_rec03_all.mat']
 trace = {}
 
-for filename in files: #allfiles:
+for filename in files:
     sortedvals = parsematlab_rats.extractmatlab(filename)
 
     cheesarinoes = []
