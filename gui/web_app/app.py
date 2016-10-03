@@ -47,8 +47,11 @@ def upload_file():
 
 @app.route('/graph/<filename>')
 def graph_file(filename):
-    file = open(app.config['UPLOAD_FOLDER'] + filename)
+    try:
+        file = open(app.config['UPLOAD_FOLDER'] + filename)
+    except:
+        return redirect('/')
     file_html = file.read()
     file.close()
-    os.remove(app.config['UPLOAD_FOLDER'] + filename)
+    #os.remove(app.config['UPLOAD_FOLDER'] + filename)
     return file_html
