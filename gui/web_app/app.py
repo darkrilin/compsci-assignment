@@ -14,11 +14,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def returnSortedFile(filename):
-    sortedvals = parsematlab_rats.extractmatlab(filename)
-
-    return sortedvals
-
 @app.route('/')
 def show_main():
     return render_template('website.html')
