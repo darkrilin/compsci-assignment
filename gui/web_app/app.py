@@ -39,5 +39,6 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(app.config['UPLOAD_FOLDER'] + filename)
             mainstuff.plot_with_plotly(app.config['UPLOAD_FOLDER'] + filename)
+            os.remove(app.config['UPLOAD_FOLDER'] + filename)
             return "succesfully uploaded"
         return redirect("/")
