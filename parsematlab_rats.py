@@ -1,6 +1,6 @@
 import scipy.io as sio
 
- def extractmatlab(filename):
+def extractmatlab(filename):
     # Fetch matlab data from the file
     file = sio.loadmat(filename)
 
