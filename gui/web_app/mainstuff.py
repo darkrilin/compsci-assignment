@@ -58,11 +58,11 @@ def plot_with_plotly(filename, colorscale=cs_default):
         print(filename + " graphed successfully")
 
     for i in trace:
-        plot(trace[i], filename=i+'.html')#, auto_open=False)
+        plot(trace[i], filename=i+'.html', auto_open=False)
 
 
 # TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD
 if __name__ == '__main__':
-    files = ['659601_rec03_all.mat']
+    files = ['659609_rec03_all.mat']
     for i in files:
-        plot_with_plotly(i, cs_heatmap)
+        plot_with_plotly(i)
