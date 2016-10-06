@@ -39,7 +39,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             ensure_dir(app.config['UPLOAD_FOLDER'])
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            mainstuff.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename)
+            mainstuff.plotly_density(app.config['UPLOAD_FOLDER'] + filename)
             os.remove(app.config['UPLOAD_FOLDER'] + filename)
             return redirect('/graph/' + filename + '.html')
         return redirect("/")

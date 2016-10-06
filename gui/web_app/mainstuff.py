@@ -46,7 +46,7 @@ def vals_to_coords(vals):
 
 
 # Main plotting functions (call this from other code)
-def plotly_scatter(filename, colorscale=cs_default, quality=16, width=512, height=512):
+def plotly_density(filename, colorscale=cs_default, quality=16, width=512, height=512):
     trace = {}
     for file in [filename]:
         extractedfile = parsematlab_rats.extractmatlab(file)
@@ -63,7 +63,7 @@ def plotly_scatter(filename, colorscale=cs_default, quality=16, width=512, heigh
         print(file + " graphed - scatter")
 
     for i in trace:
-        plot(trace[i], filename=i+'.html')#, auto_open=False)
+        plot(trace[i], filename=i + '.html', auto_open=False)
 
 
 def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
@@ -79,7 +79,6 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
             height = h
 
         heatmap = [[0 for i in range(width)] for j in range(height)]
-        maxval = 0
         for k in vals_to_coords(extractedfile):
             _x = floor(k[0] * width // 50)
             _y = floor(k[1] * height // 11)
@@ -118,7 +117,7 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
         }]
 
     for i in trace:
-        plot(trace[i], filename=i + '.html')
+        plot(trace[i], filename=i + '.html', auto_open=False)
 
 
 
