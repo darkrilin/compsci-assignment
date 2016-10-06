@@ -1,11 +1,10 @@
 import os
-import parsematlab_rats
-import plotly.graph_objs as go
-from plotly.tools import FigureFactory as FF
-from plotly.offline import download_plotlyjs, plot, iplot, init_notebook_mode
 from math import floor, hypot
 
-from random import randint
+from plotly.offline import plot, init_notebook_mode
+from plotly.tools import FigureFactory as FF
+
+import parsematlab_rats
 
 init_notebook_mode(connected=True)
 
@@ -45,27 +44,81 @@ def vals_to_coords(vals):
 
     return coords
 
-# Main plotting function (call this from other code)
-def plot_with_plotly(filename, colorscale=cs_default, quality=16, size=(512,512)):
-    trace = {}
 
+# Main plotting functions (call this from other code)
+def plotly_scatter(filename, colorscale=cs_default, quality=16, width=512, height=512):
+    trace = {}
     for file in [filename]:
         extractedfile = parsematlab_rats.extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
         trace[file] = FF.create_2D_density (
             x = [i[0] for i in coordinates],
             y = [i[1] for i in coordinates],
-            width = size[0],
-            height = size[1],
+            width=width,
+            height=height,
             colorscale = colorscale,
-            point_color = (0,0,0,0),
-            point_size = 1,
+            point_size='1',
             ncontours = quality
         )
-        print(file + " graphed successfully")
+        print(file + " graphed - scatter")
 
     for i in trace:
         plot(trace[i], filename=i+'.html')#, auto_open=False)
+
+
+def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
+    trace = {}
+    radius = int(radius * (w / 2500))
+    width = w
+
+    for file in [filename]:
+        extractedfile = parsematlab_rats.extractmatlab(file)
+        if h == -1:
+            height = len(extractedfile)
+        else:
+            height = h
+
+        heatmap = [[0 for i in range(width)] for j in range(height)]
+        maxval = 0
+        for k in vals_to_coords(extractedfile):
+            _x = floor(k[0] * width // 50)
+            _y = floor(k[1] * height // 11)
+            x1, x2 = max(0, min(width, _x - radius)), max(0, min(width, _x + radius))
+            y1, y2 = max(0, min(height, _y - radius)), max(0, min(height, _y + radius))
+            for i in range(x1, x2):
+                for j in range(y1, y2):
+                    pythag = hypot(_x - i, _y - j)
+                    if pythag <= radius:
+                        if smooth == True:
+                            heatmap[j][i] += 1 - (pythag / radius) ** 1 / 2
+                        else:
+                            heatmap[j][i] += 1
+
+        """
+        for j in range(len(heatmap)):
+            for i in range(len(heatmap[j])):
+                maxval = max(maxval, heatmap[j][i])
+
+        inter = maxval/bands
+
+        for j in range(len(heatmap)):
+            for i in range(len(heatmap[j])):
+                heatmap[j][i] = int(round(heatmap[j][i]/inter)*inter)
+        """
+
+        trace[file] = [{
+            'z': heatmap,
+            'type': 'heatmap',
+            'hoverinfo': 'z',
+            'colorscale': -1,
+            'colorbar': {
+                'tick0': 0,
+                'dtick': 0
+            }
+        }]
+
+    for i in trace:
+        plot(trace[i], filename=i + '.html')
 
 
 
@@ -76,31 +129,4 @@ if __name__ == '__main__':
     for i in files:
         plot_with_plotly(i, cs_greyscale, size=(1000,1000))
     '''
-    extractedfile = parsematlab_rats.extractmatlab('659601_rec03_all.mat')
-
-    width = 1200
-    height = len(extractedfile)
-    radius = int(60*(width/2500))
-
-    heatmap = [[0 for i in range(width)] for j in range(height)]
-    for k in vals_to_coords(extractedfile):
-        _x = floor(k[0] * width // 50)
-        _y = floor(k[1]*height//11)
-        x1, x2 = max(0, min(width, _x-radius)), max(0, min(width, _x+radius))
-        y1, y2 = max(0, min(height, _y-radius)), max(0, min(height, _y+radius))
-        for i in range(x1, x2):
-            for j in range(y1, y2):
-                pythag = hypot(_x-i, _y-j)
-                if pythag <= radius:
-                    heatmap[j][i] += 1#-(pythag/radius)**1/2
-
-    plot([{
-        'z': heatmap,
-        'type': 'heatmap',
-        'hoverinfo': 'z',
-        'colorscale': -1,
-        'colorbar': {
-            'tick0': 0,
-            'dtick': 0
-        }
-    }], filename='waht.html')
+    plotly_heatmap('659601_rec03_all.mat', radius=70)

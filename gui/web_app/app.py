@@ -1,8 +1,8 @@
-from flask import Flask, render_template, url_for, request, redirect
-from werkzeug.utils import secure_filename
-import parsematlab_rats
-import mainstuff
 import os
+
+import mainstuff
+from flask import Flask, render_template, request, redirect
+from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['mat'])
@@ -39,7 +39,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             ensure_dir(app.config['UPLOAD_FOLDER'])
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            mainstuff.plot_with_plotly(app.config['UPLOAD_FOLDER'] + filename)
+            mainstuff.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename)
             os.remove(app.config['UPLOAD_FOLDER'] + filename)
             return redirect('/graph/' + filename + '.html')
         return redirect("/")
