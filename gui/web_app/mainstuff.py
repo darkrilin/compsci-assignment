@@ -1,7 +1,8 @@
 import os
 from math import floor, hypot
 
-from plotly.offline import plot, init_notebook_mode
+import plotly.graph_objs as go
+from plotly.offline import init_notebook_mode
 from plotly.tools import FigureFactory as FF
 
 import parsematlab_rats
@@ -46,7 +47,22 @@ def vals_to_coords(vals):
 
 
 # Main plotting functions (call this from other code)
-def plotly_density(filename, colorscale=cs_default, quality=16, width=512, height=512):
+def plotly_scatter(filename, auto_open=True):
+    trace = {}
+    for file in [filename]:
+        extractedfile = parsematlab_rats.extractmatlab(file)
+        coordinates = vals_to_coords(extractedfile)
+        trace[file] = go.Scatter(
+            x=[i[0] for i in coordinates],
+            y=[i[1] for i in coordinates],
+            mode='markers'
+        )
+        print(file + " graphed - scatter")
+
+    for i in trace:
+        plot([trace[i]], filename=i + '.html'), auto_open = auto_open)
+
+    def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
     trace = {}
     for file in [filename]:
         extractedfile = parsematlab_rats.extractmatlab(file)
@@ -60,13 +76,12 @@ def plotly_density(filename, colorscale=cs_default, quality=16, width=512, heigh
             point_size='1',
             ncontours = quality
         )
-        print(file + " graphed - scatter")
+        print(file + " graphed - density")
 
     for i in trace:
-        plot(trace[i], filename=i + '.html', auto_open=False)
+        plot(trace[i], filename=i + '.html', auto_open=auto_open)
 
-
-def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
+    def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, auto_open=True):
     trace = {}
     radius = int(radius * (w / 2500))
     width = w
@@ -115,9 +130,10 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False):
                 'dtick': 0
             }
         }]
+        print(file + " graphed - heatmap")
 
     for i in trace:
-        plot(trace[i], filename=i + '.html', auto_open=False)
+        plot(trace[i], filename=i + '.html', auto_open=auto_open)
 
 
 
@@ -128,4 +144,6 @@ if __name__ == '__main__':
     for i in files:
         plot_with_plotly(i, cs_greyscale, size=(1000,1000))
     '''
-    plotly_heatmap('659601_rec03_all.mat', radius=70)
+    plotly_scatter('659601_rec03_all.mat')
+    plotly_heatmap('659601_rec03_all.mat')
+    plotly_density('659601_rec03_all.mat')
