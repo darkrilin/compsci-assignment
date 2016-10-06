@@ -60,7 +60,7 @@ def plotly_scatter(filename, auto_open=True):
         print(file + " graphed - scatter")
 
     for i in trace:
-        plot([trace[i]], filename=i + '.html'), auto_open = auto_open)
+        plot([trace[i]], filename=i + '.html', auto_open = auto_open)
 
 def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
     trace = {}
@@ -144,6 +144,6 @@ if __name__ == '__main__':
     for i in files:
         plot_with_plotly(i, cs_greyscale, size=(1000,1000))
     '''
-    plotly_scatter('659601_rec03_all.mat')
-    plotly_heatmap('659601_rec03_all.mat')
+    #plotly_scatter('659601_rec03_all.mat')
+    #plotly_heatmap('659601_rec03_all.mat')
     plotly_density('659601_rec03_all.mat')
