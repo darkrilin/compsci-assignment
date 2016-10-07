@@ -9,6 +9,7 @@ ALLOWED_EXTENSIONS = set(['mat'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.run(host='0.0.0.0')
 
 
 def allowed_file(filename):
