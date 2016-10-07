@@ -144,5 +144,5 @@ if __name__ == '__main__':
     for i in files:
         plot_with_plotly(i, cs_greyscale, size=(1000,1000))
     '''
-    #plotly_scatter('659601_rec03_all.mat')
-    plotly_heatmap('659601_rec03_all.mat', smooth=True, radius=100)
+    plotly_scatter('659601_rec03_all.mat')
+    plotly_heatmap('659601_rec03_all.mat', smooth=True, radius=80)
