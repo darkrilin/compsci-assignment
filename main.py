@@ -85,6 +85,7 @@ def plotly_scatter(filename, auto_open=True):
     for i in trace:
         plot([trace[i]], filename=i + '.html', auto_open = auto_open)
 
+
 def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
     trace = {}
     for file in [filename]:
@@ -103,6 +104,7 @@ def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, heig
 
     for i in trace:
         plot(trace[i], filename=i + '.html', auto_open=auto_open)
+
 
 def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, auto_open=True):
     trace = {}
