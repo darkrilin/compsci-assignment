@@ -11,13 +11,6 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.static_folder = os.getcwd()+STATIC_FOLDER
 
-'''
-PORT = int(os.environ.get('PORT', 5000))
-HEROKU = os.environ.get('HEROKU', 0)
-if (HEROKU):
-    app.run(host='0.0.0.0', port=PORT)
-'''
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -31,7 +24,6 @@ def ensure_dir(f):
 @app.route('/')
 def show_main():
     return render_template('website.html')
-
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
@@ -53,7 +45,6 @@ def upload_file():
             return redirect('/graph/' + filename + '.html')
         return redirect("/")
 
-
 @app.route('/graph/<filename>')
 def graph_file(filename):
     try:
@@ -66,3 +57,9 @@ def graph_file(filename):
     return file_html
 
 
+PORT = int(os.environ.get('PORT', 5000))
+HEROKU = os.environ.get('HEROKU', 0)
+if (HEROKU):
+    app.run(host='0.0.0.0', port=PORT)
+else:
+    app.run(host='localhost')
