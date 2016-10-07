@@ -4,8 +4,20 @@ import main
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
 
+UPLOAD_FOLDER = 'uploads/'
+ALLOWED_EXTENSIONS = set(['mat'])
+PORT = int(os.environ.get('PORT', 5000))
+HEROKU = os.environ.get('HEROKU', 0)
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+if (HEROKU):
+    app.run(host='0.0.0.0', port=PORT)
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 def ensure_dir(f):
     d = os.path.dirname(os.getcwd() + f)
@@ -14,16 +26,6 @@ def ensure_dir(f):
 
 
 @app.route('/')
-def main():
-    UPLOAD_FOLDER = 'uploads/'
-    ALLOWED_EXTENSIONS = set(['mat'])
-    PORT = int(os.environ.get('PORT', 5000))
-    HEROKU = os.environ.get('HEROKU', 0)
-
-    app = Flask(__name__)
-    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-    if (HEROKU):
-        app.run(host='0.0.0.0', port=PORT)
 def show_main():
     return render_template('website.html')
 
@@ -60,7 +62,4 @@ def graph_file(filename):
     #os.remove(app.config['UPLOAD_FOLDER'] + filename)
     return file_html
 
-"""
-if __name__ == '__main__':
-    main()
-"""
+
