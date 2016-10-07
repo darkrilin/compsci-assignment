@@ -11,6 +11,9 @@ app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.static_folder = os.getcwd()+STATIC_FOLDER
 
+# I just want to say Will, I am so very sorry for anything
+# I may have done to your precious files. Hopefully you can still
+# test this thing locally, because it sort of works on heroku now.
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -59,7 +62,7 @@ def graph_file(filename):
 
 PORT = int(os.environ.get('PORT', 5000))
 HEROKU = os.environ.get('HEROKU', 0)
-if (HEROKU):
+if HEROKU:
     app.run(host='0.0.0.0', port=PORT)
 else:
     app.run(host='localhost')
