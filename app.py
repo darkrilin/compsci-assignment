@@ -4,10 +4,12 @@ import main
 import os
 
 UPLOAD_FOLDER = 'uploads/'
+STATIC_FOLDER = 'static/'
 ALLOWED_EXTENSIONS = set(['mat'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.static_folder = os.getcwd()+STATIC_FOLDER
 
 '''
 PORT = int(os.environ.get('PORT', 5000))
