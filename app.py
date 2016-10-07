@@ -1,23 +1,24 @@
-import os
-
-import main
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
+import main
+import os
 
 UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = set(['mat'])
-PORT = int(os.environ.get('PORT', 5000))
-HEROKU = os.environ.get('HEROKU', 0)
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+'''
+PORT = int(os.environ.get('PORT', 5000))
+HEROKU = os.environ.get('HEROKU', 0)
 if (HEROKU):
     app.run(host='0.0.0.0', port=PORT)
+'''
 
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
-
 
 def ensure_dir(f):
     d = os.path.dirname(os.getcwd() + f)
