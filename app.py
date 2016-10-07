@@ -1,6 +1,6 @@
 import os
 
-import mainstuff
+import main
 from flask import Flask, render_template, request, redirect
 from werkzeug.utils import secure_filename
 
@@ -39,7 +39,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             ensure_dir(app.config['UPLOAD_FOLDER'])
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            mainstuff.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+            main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
             os.remove(app.config['UPLOAD_FOLDER'] + filename)
             return redirect('/graph/' + filename + '.html')
         return redirect("/")

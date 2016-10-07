@@ -1,29 +1,52 @@
-import os
 from math import floor, hypot
+import scipy.io as sio
 
 import plotly.graph_objs as go
 from plotly.offline import init_notebook_mode, plot
 from plotly.tools import FigureFactory as FF
 
-import parsematlab_rats
-
 init_notebook_mode(connected=True)
+
 
 # Color scales
 cs_default = ['#EB3821', '#DDE22A', '#67BB47', '#6FCBD5', '#354D9D', '#D2D0E9']
 cs_magma = ['#FBFABD', '#FD9A69', '#E85461', '#842681', '#360F6B', '#000000']
 cs_heatmap = ['rgb(165,0,38)', 'rgb(215,48,39)', 'rgb(244,109,67)', 'rgb(253,174,97)', 'rgb(254,224,144)', 'rgb(224,243,248)', 'rgb(171,217,233)', 'rgb(116,173,209)', 'rgb(69,117,180)', 'rgb(49,54,149)']
 cs_greyscale = ['rgb(0,0,0)', 'rgb(255,255,255)']
-cs_hm_default = [[0,'#EB3821'], [10,'#DDE22A'], [20,'#67BB47'], [30,'#6FCBD5'], [40,'#354D9D'], [50,'#D2D0E9']]
 
 
-# Create new folder if one doesn't already exist
-def ensure_dir(f):
-    d = os.path.dirname(os.getcwd() + f)
-    if not os.path.exists(d):
-        os.makedirs(d)
-        return True
-    return False
+# Extract files from provided matlab structure
+def extractmatlab(filename):
+    file = sio.loadmat(filename)
+
+    wave_timestamp = file['Sch_wav'][0][0][4]
+    stim_timestamp = file['StimTrig'][0][0][4]
+    stim_amplitude = file['StimTrig'][0][0][5]
+    randomvals = []
+    sortedvals = []
+
+    for i in range(len(stim_timestamp)):
+        randomvals += [[float("%.6f" % stim_timestamp[i][0]), stim_amplitude[i][0]]]
+
+    for i in range(len(randomvals)):
+        stime = randomvals[i][0]
+        pops = []
+        for j in wave_timestamp:
+            if j>=stime:
+                if j<=float(stime)+0.05:
+                    pops += [float("%.3f" % ((j[0]-float(stime))*1000))]
+                else:
+                    break
+        randomvals[i] += [pops]
+
+    experimentbatch = [[]]*10
+    for i in range(len(randomvals)):
+        if randomvals[i][1] == 62:
+            sortedvals += experimentbatch + [62]
+        else:
+            experimentbatch[randomvals[i][1]-1] = randomvals[i]
+
+    return sortedvals
 
 # Sorts the values in separate sections to list of plot-able coordinates
 def vals_to_coords(vals):
@@ -50,7 +73,7 @@ def vals_to_coords(vals):
 def plotly_scatter(filename, auto_open=True):
     trace = {}
     for file in [filename]:
-        extractedfile = parsematlab_rats.extractmatlab(file)
+        extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
         trace[file] = go.Scatter(
             x=[i[0] for i in coordinates],
@@ -65,7 +88,7 @@ def plotly_scatter(filename, auto_open=True):
 def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
     trace = {}
     for file in [filename]:
-        extractedfile = parsematlab_rats.extractmatlab(file)
+        extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
         trace[file] = FF.create_2D_density (
             x = [i[0] for i in coordinates],
@@ -87,11 +110,10 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, au
     width = w
 
     for file in [filename]:
-        extractedfile = parsematlab_rats.extractmatlab(file)
-        if h == -1:
-            height = len(extractedfile)
-        else:
-            height = h
+        extractedfile = extractmatlab(file)
+
+        if h == -1: height = len(extractedfile)
+        else: height = h
 
         heatmap = [[0 for i in range(width)] for j in range(height)]
         for k in vals_to_coords(extractedfile):
@@ -108,27 +130,11 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, au
                         else:
                             heatmap[j][i] += 1
 
-        """
-        for j in range(len(heatmap)):
-            for i in range(len(heatmap[j])):
-                maxval = max(maxval, heatmap[j][i])
-
-        inter = maxval/bands
-
-        for j in range(len(heatmap)):
-            for i in range(len(heatmap[j])):
-                heatmap[j][i] = int(round(heatmap[j][i]/inter)*inter)
-        """
-
         trace[file] = [{
             'z': heatmap,
             'type': 'heatmap',
             'hoverinfo': 'z',
             'colorscale': -1,
-            'colorbar': {
-                'tick0': 0,
-                'dtick': 0
-            }
         }]
         print(file + " graphed - heatmap")
 
@@ -139,10 +145,5 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, au
 
 ### --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- ###
 if __name__ == '__main__':
-    '''
-    files = ['659601_rec03_all.mat']
-    for i in files:
-        plot_with_plotly(i, cs_greyscale, size=(1000,1000))
-    '''
     plotly_scatter('659601_rec03_all.mat')
     plotly_heatmap('659601_rec03_all.mat', smooth=True, radius=80)
