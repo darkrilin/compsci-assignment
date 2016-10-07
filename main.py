@@ -5,7 +5,7 @@ import plotly.graph_objs as go
 from plotly.offline import init_notebook_mode, plot
 from plotly.tools import FigureFactory as FF
 
-init_notebook_mode(connected=True)
+#init_notebook_mode()
 
 
 # Color scales
@@ -147,5 +147,5 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, au
 
 ### --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- ###
 if __name__ == '__main__':
-    plotly_scatter('659601_rec03_all.mat')
-    plotly_heatmap('659601_rec03_all.mat', smooth=True, radius=80)
+    plotly_scatter('temp/659605_rec03_all.mat')
+    #plotly_heatmap('temp/659605_rec03_all.mat', smooth=True, radius=80)
