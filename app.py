@@ -19,7 +19,7 @@ def allowed_file(filename):
 
 
 def ensure_dir(f):
-    d = os.path.dirname(os.getcwd() + f)
+    d = os.path.dirname(f)
     if not os.path.exists(d):
         os.makedirs(d)
 
@@ -44,7 +44,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             ensure_dir(app.config['UPLOAD_FOLDER'])
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+            main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
             os.remove(app.config['UPLOAD_FOLDER'] + filename)
             return redirect('/graph/' + filename + '.html')
         return redirect("/")
