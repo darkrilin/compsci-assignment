@@ -2,16 +2,15 @@ from math import floor, hypot
 import scipy.io as sio
 
 import plotly.graph_objs as go
-from plotly.offline import init_notebook_mode, plot
+from plotly.offline import plot
 from plotly.tools import FigureFactory as FF
-
-#init_notebook_mode()
 
 
 # Color scales
 cs_default = ['#EB3821', '#DDE22A', '#67BB47', '#6FCBD5', '#354D9D', '#D2D0E9']
 cs_magma = ['#FBFABD', '#FD9A69', '#E85461', '#842681', '#360F6B', '#000000']
-cs_heatmap = ['rgb(165,0,38)', 'rgb(215,48,39)', 'rgb(244,109,67)', 'rgb(253,174,97)', 'rgb(254,224,144)', 'rgb(224,243,248)', 'rgb(171,217,233)', 'rgb(116,173,209)', 'rgb(69,117,180)', 'rgb(49,54,149)']
+cs_heatmap = ['rgb(165,0,38)', 'rgb(215,48,39)', 'rgb(244,109,67)', 'rgb(253,174,97)', 'rgb(254,224,144)',
+              'rgb(224,243,248)', 'rgb(171,217,233)', 'rgb(116,173,209)', 'rgb(69,117,180)', 'rgb(49,54,149)']
 cs_greyscale = ['rgb(0,0,0)', 'rgb(255,255,255)']
 
 
@@ -32,8 +31,8 @@ def extractmatlab(filename):
         stime = randomvals[i][0]
         pops = []
         for j in wave_timestamp:
-            if j>=stime:
-                if j<=float(stime)+0.05:
+            if j >= stime:
+                if j <= float(stime)+0.05:
                     pops += [float("%.3f" % ((j[0]-float(stime))*1000))]
                 else:
                     break
@@ -48,6 +47,7 @@ def extractmatlab(filename):
 
     return sortedvals
 
+
 # Sorts the values in separate sections to list of plot-able coordinates
 def vals_to_coords(vals):
     sortedvals = []
@@ -55,7 +55,7 @@ def vals_to_coords(vals):
     n = []
 
     for i in vals:
-        if i == 62: # end row
+        if i == 62:  # end row
             sortedvals += [n]
             n = []
         else:
@@ -83,7 +83,7 @@ def plotly_scatter(filename, auto_open=True):
         print(file + " graphed - scatter")
 
     for i in trace:
-        plot([trace[i]], filename=i + '.html', auto_open = auto_open)
+        plot([trace[i]], filename=i + '.html', auto_open=auto_open)
 
 
 def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
@@ -91,14 +91,14 @@ def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, heig
     for file in [filename]:
         extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
-        trace[file] = FF.create_2D_density (
-            x = [i[0] for i in coordinates],
-            y = [i[1] for i in coordinates],
+        trace[file] = FF.create_2D_density(
+            x=[i[0] for i in coordinates],
+            y=[i[1] for i in coordinates],
             width=width,
             height=height,
-            colorscale = colorscale,
+            colorscale=colorscale,
             point_size='1',
-            ncontours = quality
+            ncontours=quality
         )
         print(file + " graphed - density")
 
@@ -106,18 +106,21 @@ def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, heig
         plot(trace[i], filename=i + '.html', auto_open=auto_open)
 
 
-def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, auto_open=True):
+def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
     trace = {}
+    layout = {}
     radius = int(radius * (w / 2500))
     width = w
 
     for file in [filename]:
         extractedfile = extractmatlab(file)
 
-        if h == -1: height = len(extractedfile)
-        else: height = h
+        if h == -1:
+            height = len(extractedfile)
+        else:
+            height = h
 
-        heatmap = [[0 for i in range(width)] for j in range(height)]
+        heatmap = [[0 for 0 in range(width)] for 0 in range(height)]
         for k in vals_to_coords(extractedfile):
             _x = floor(k[0] * width // 50)
             _y = floor(k[1] * height // 11)
@@ -127,25 +130,28 @@ def plotly_heatmap(filename, w=1000, h=-1, radius=60, bands=10, smooth=False, au
                 for j in range(y1, y2):
                     pythag = hypot(_x - i, _y - j)
                     if pythag <= radius:
-                        if smooth == True:
+                        if smooth:
                             heatmap[j][i] += 1 - (pythag / radius) ** 1 / 2
                         else:
                             heatmap[j][i] += 1
 
         trace[file] = [{
             'z': heatmap,
+            'x': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
             'type': 'heatmap',
             'hoverinfo': 'z',
             'colorscale': -1,
         }]
+        layout[file] = go.Layout(
+            title='Test title'
+        )
         print(file + " graphed - heatmap")
 
     for i in trace:
-        plot(trace[i], filename=i + '.html', auto_open=auto_open)
+        plot(go.Figure(data=trace[i], layout=layout[i]), filename=i + '.html', auto_open=auto_open)
 
 
-
-### --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- ###
+# # # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- # # #
 if __name__ == '__main__':
-    plotly_scatter('temp/659605_rec03_all.mat')
-    #plotly_heatmap('temp/659605_rec03_all.mat', smooth=True, radius=80)
+    # plotly_scatter('temp/659605_rec03_all.mat')
+    plotly_heatmap('temp/659605_rec03_all.mat', smooth=True, radius=80)
