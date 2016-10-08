@@ -120,7 +120,7 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
         else:
             height = h
 
-        heatmap = [[0 for 0 in range(width)] for 0 in range(height)]
+        heatmap = [[0 for i in range(width)] for j in range(height)]
         for k in vals_to_coords(extractedfile):
             _x = floor(k[0] * width // 50)
             _y = floor(k[1] * height // 11)
