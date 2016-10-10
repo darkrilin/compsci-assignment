@@ -135,5 +135,5 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
 
 # # # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- # # #
 if __name__ == '__main__':
-    # plotly_scatter('temp/659605_rec03_all.mat')
     plotly_heatmap('temp/659605_rec03_all.mat', radius=70)
+    plotly_scatter('temp/659605_rec03_all.mat')
