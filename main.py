@@ -3,7 +3,6 @@ import scipy.io as sio
 
 import plotly.graph_objs as go
 from plotly.offline import plot
-from plotly.tools import FigureFactory as FF
 
 
 # Color scales
@@ -83,7 +82,7 @@ def plotly_scatter(filename, auto_open=True):
         print(file + " graphed - scatter")
 
     for i in trace:
-        filename = i.replace('.mat','') + '_scatter.html'
+        filename = i.replace('.mat', '') + '_scatter.html'
         plot([trace[i]], filename=filename, auto_open=auto_open)
 
 
@@ -117,9 +116,9 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
                             heatmap[j][i] += 1
 
         trace[file] = [{
+            'type': 'heatmap',
             'z': heatmap,
             'x': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-            'type': 'heatmap',
             'hoverinfo': 'z',
             'colorscale': -1,
         }]
@@ -129,7 +128,7 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
         print(file + " graphed - heatmap")
 
     for i in trace:
-        filename = i.replace('.mat','') + '_heatmap.html'
+        filename = i.replace('.mat', '') + '_heatmap.html'
         plot(go.Figure(data=trace[i], layout=layout[i]), filename=filename, auto_open=auto_open)
 
 
