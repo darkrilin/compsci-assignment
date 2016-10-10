@@ -83,27 +83,8 @@ def plotly_scatter(filename, auto_open=True):
         print(file + " graphed - scatter")
 
     for i in trace:
-        plot([trace[i]], filename=i + '.html', auto_open=auto_open)
-
-
-def plotly_density(filename, colorscale=cs_default, quality=16, width=1024, height=1024, auto_open=True):
-    trace = {}
-    for file in [filename]:
-        extractedfile = extractmatlab(file)
-        coordinates = vals_to_coords(extractedfile)
-        trace[file] = FF.create_2D_density(
-            x=[i[0] for i in coordinates],
-            y=[i[1] for i in coordinates],
-            width=width,
-            height=height,
-            colorscale=colorscale,
-            point_size='1',
-            ncontours=quality
-        )
-        print(file + " graphed - density")
-
-    for i in trace:
-        plot(trace[i], filename=i + '.html', auto_open=auto_open)
+        filename = i.replace('.mat','') + '_scatter.html'
+        plot([trace[i]], filename=filename, auto_open=auto_open)
 
 
 def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
@@ -148,10 +129,11 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
         print(file + " graphed - heatmap")
 
     for i in trace:
-        plot(go.Figure(data=trace[i], layout=layout[i]), filename=i + '.html', auto_open=auto_open)
+        filename = i.replace('.mat','') + '_heatmap.html'
+        plot(go.Figure(data=trace[i], layout=layout[i]), filename=filename, auto_open=auto_open)
 
 
 # # # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- # # #
 if __name__ == '__main__':
     # plotly_scatter('temp/659605_rec03_all.mat')
-    plotly_heatmap('temp/659605_rec03_all.mat', smooth=True, radius=80)
+    plotly_heatmap('temp/659605_rec03_all.mat', radius=70)
