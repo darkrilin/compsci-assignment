@@ -42,28 +42,32 @@ def upload_file():
             filename = secure_filename(file.filename)
             ensure_dir(app.config['UPLOAD_FOLDER'])
             file.save(app.config['UPLOAD_FOLDER'] + filename)
-            if heatmap:
-                main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
-            if scatter:
-                main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
-            os.remove(app.config['UPLOAD_FOLDER'] + filename)
-            if heatmap and scatter:
-                session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
-                session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
-                session['menu_active'] = True
-                return redirect('/select')
-            elif heatmap:
-                session['menu_active'] = False
-                session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
-                if 'scatter_path' in session:
-                    session.pop('scatter_path', None)
-                return redirect('/graph/' + filename[:-4] + '_heatmap' + '.html')
-            elif scatter:
-                session['menu_active'] = False
-                session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
-                if 'heatmap_path' in session:
-                    session.pop('heatmap_path', None)
-                return redirect('/graph/' + filename[:-4] + '_scatter' + '.html')
+            try:
+                if heatmap:
+                    main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
+                if scatter:
+                    main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+                os.remove(app.config['UPLOAD_FOLDER'] + filename)
+                if heatmap and scatter:
+                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
+                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
+                    session['menu_active'] = True
+                    return redirect('/select')
+                elif heatmap:
+                    session['menu_active'] = False
+                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
+                    if 'scatter_path' in session:
+                        session.pop('scatter_path', None)
+                    return redirect('/graph/' + filename[:-4] + '_heatmap' + '.html')
+                elif scatter:
+                    session['menu_active'] = False
+                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
+                    if 'heatmap_path' in session:
+                        session.pop('heatmap_path', None)
+                    return redirect('/graph/' + filename[:-4] + '_scatter' + '.html')
+            except KeyError:
+                return redirect('/static/keyerror.html')
+
 
         return redirect("/")
 

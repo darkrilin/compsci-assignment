@@ -3,6 +3,7 @@ import scipy.io as sio
 
 import plotly.graph_objs as go
 from plotly.offline import plot
+from plotly import tools
 
 
 # Color scales
@@ -70,31 +71,36 @@ def vals_to_coords(vals):
 
 # Main plotting functions (call this from other code)
 def plotly_scatter(filename, auto_open=True):
-    trace = {}
-    for file in [filename]:
+    if type(filename) is not list:
+        filename = [filename]
+
+    for file in filename:
         extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
-        trace[file] = go.Scatter(
+        trace = go.Scatter(
             x=[i[0] for i in coordinates],
             y=[i[1] for i in coordinates],
             mode='markers'
         )
-        print(file + " graphed - scatter")
 
-    for i in trace:
-        filename = i.replace('.mat', '') + '_scatter.html'
-        plot([trace[i]], filename=filename, auto_open=auto_open)
+        # TODO: separate sections into subplots
+
+        name = file.replace('.mat', '') + '_scatter.html'
+        plot(go.Figure(data=[trace]), filename=name, auto_open=auto_open)
+        print(name + " graphed - scatter")
+
 
 
 def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
-    trace = {}
-    layout = {}
+
+    if type(filename) is not list:
+        filename = [filename]
     radius = int(radius * (w / 2500))
     width = w
 
-    for file in [filename]:
-        extractedfile = extractmatlab(file)
+    for file in filename:
 
+        extractedfile = extractmatlab(file)
         if h == -1:
             height = len(extractedfile)
         else:
@@ -115,24 +121,28 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
                         else:
                             heatmap[j][i] += 1
 
-        trace[file] = [{
+        trace = [{
             'type': 'heatmap',
             'z': heatmap,
             'x': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
             'hoverinfo': 'z',
             'colorscale': -1,
         }]
-        layout[file] = go.Layout(
-            title='Test title'
+        layout = go.Layout(
+            title="Heatmap: "+file[file.find('/')+1::]
         )
-        print(file + " graphed - heatmap")
 
-    for i in trace:
-        filename = i.replace('.mat', '') + '_heatmap.html'
-        plot(go.Figure(data=trace[i], layout=layout[i]), filename=filename, auto_open=auto_open)
+        # TODO: separate sections into subplots
+
+        name = file.replace('.mat', '') + '_heatmap.html'
+        plot(go.Figure(data=trace, layout=layout), filename=name, auto_open=auto_open)
+        print(name + " graphed - heatmap")
 
 
-# # # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- # # #
+
+
+
+# --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- #
 if __name__ == '__main__':
-    plotly_heatmap('temp/659605_rec03_all.mat', radius=70)
-    plotly_scatter('temp/659605_rec03_all.mat')
+    plotly_heatmap('temp/659605_rec03_all.mat')
+    #plotly_scatter('temp/659605_rec03_all.mat')
