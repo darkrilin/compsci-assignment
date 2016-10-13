@@ -39,11 +39,16 @@
                     if(allowed_file($("#theFile").get(0).files[0].name)){
                         scatter = $("#scatter").is(":checked");
                         heatmap = $("#heatmap").is(":checked");
-                        $("#uploadbox").show();
-                        $("#greyout").show();
-                        $("#target").append('<input name="scatter" type="text" value="'+scatter+'" />');
-                        $("#target").append('<input name="heatmap" type="text" value="'+heatmap+'" />');
-                        $("#target").submit();
+                        if(scatter|| heatmap){
+                            $("#uploadbox").show();
+                            $("#greyout").show();
+                            $("#target").append('<input name="scatter" type="text" value="'+scatter+'" />');
+                            $("#target").append('<input name="heatmap" type="text" value="'+heatmap+'" />');
+                            $("#target").submit();
+                        }
+                        else{
+                            alert("Please select a graph type");
+                        }
                     }
                     else{
                         alert("Please select a file with the extension '.mat'");
