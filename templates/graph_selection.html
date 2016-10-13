@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neuroscience Graph Maker</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='stylesheet.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#scatter").click(function(){
+                window.location.replace('/scatter');
+            });
+            $("#heatmap").click(function(){
+                window.location.replace('/heatmap');
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="center">
+        <div style="display:inline; position:relative; z-index:100;">
+            <button id="scatter" class="importbtn" style="">Scatter Plot</button>
+        </div>
+        <div style="display:inline; position:relative; z-index:100;">
+            <button id="heatmap" class="importbtn" style="">Heatmap</button>
+        </div>
+    </div>
+</body>
+</html>

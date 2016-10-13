@@ -37,9 +37,12 @@
             $(".submitbtn").on("click", function(){
                 if($("#theFile").get(0).files.length != 0){
                     if(allowed_file($("#theFile").get(0).files[0].name)){
-                    console.log("worked");
+                        scatter = $("#scatter").is(":checked");
+                        heatmap = $("#heatmap").is(":checked");
                         $("#uploadbox").show();
                         $("#greyout").show();
+                        $("#target").append('<input name="scatter" type="text" value="'+scatter+'" />');
+                        $("#target").append('<input name="heatmap" type="text" value="'+heatmap+'" />');
                         $("#target").submit();
                     }
                     else{
@@ -56,7 +59,7 @@
 </head>
 <body>
     <div id="greyout" style="position:fixed; height:100%; width:100%; background-color:rgba(0, 0, 0, 0.9); z-index:999;"></div>
-    <div id="uploadbox" class="center" style="background-color:LightGrey; box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);">
+    <div id="uploadbox" class="center" style="min-height:200px; min-width: 300px; background-color:LightGrey; box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);">
         <p style="position:absolute; margin:auto; top:50%; left:50%; transform:translate(-50%, -50%);">Uploading File...</p>
     </div>
     <div class="box">
@@ -68,6 +71,12 @@
                         <div>
                             <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100;">
                                 <button class="importbtn" style="">Import MATLAB File</button>
+                                <div style="position:absolute; text-align:initial; left:103%; min-width:200px; bottom: 5px;">
+                                    <form id="checkbox" action="/checksubmit">
+                                        <label><input id="scatter" type="checkbox" name="graph" value="scatter"> Scatter Plot</label><br>
+                                        <label><input id="heatmap" type="checkbox" name="graph" value="heatmap"> Heatmap Plot</label><br>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                         <div style="position:relative; text-align:center;">
