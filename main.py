@@ -92,15 +92,33 @@ def plotly_scatter(filename, auto_open=True):
                 go.Scatter(
                     x = x[i],
                     y = y[i],
+                    yaxis = 'y'+str(i+1),
                     mode = "markers",
                     hoverinfo = "x",
                     marker = dict(
                         color = ["#000000"]
                     )),
-                len(x)-i, 1)
+                len(x)-i, 1
+            )
 
         fig['layout'].update(title = "Scatter: "+file[file.find('/')+1::],
-                             showlegend = False)
+                             showlegend = False,
+                             yaxis1 = dict(showticklabels = False),
+                             yaxis2 = dict(showticklabels = False),
+                             yaxis3 = dict(showticklabels = False),
+                             yaxis4 = dict(showticklabels = False),
+                             yaxis5 = dict(showticklabels = False, title = "Amplitude"),
+                             yaxis6 = dict(showticklabels = False),
+                             yaxis7 = dict(showticklabels = False),
+                             yaxis8 = dict(showticklabels = False),
+                             yaxis9 = dict(showticklabels = False),
+                             yaxis10 = dict(showticklabels = False),
+                             annotations = [
+                                 dict(
+                                     x = -0.015, y = 0.965-i*0.1035,
+                                     text = str(10-i), showarrow = False,
+                                     xref = 'paper', yref = "paper", align = "center") for i in range(10)
+                             ])
 
         # TODO: Fix y axis labels, perhaps use annotations
 
