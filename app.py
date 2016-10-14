@@ -68,7 +68,6 @@ def upload_file():
             except KeyError:
                 return redirect('/static/keyerror.html')
 
-
         return redirect("/")
 
 

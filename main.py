@@ -77,16 +77,20 @@ def plotly_scatter(filename, auto_open=True):
     for file in filename:
         extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
+
         trace = go.Scatter(
             x=[i[0] for i in coordinates],
             y=[i[1] for i in coordinates],
             mode='markers'
         )
+        layout = go.Layout(
+            title="Scatter: "+file[file.find('/')+1::]
+        )
 
         # TODO: separate sections into subplots
 
         name = file.replace('.mat', '') + '_scatter.html'
-        plot(go.Figure(data=[trace]), filename=name, auto_open=auto_open)
+        plot(go.Figure(data=[trace], layout=layout), filename=name, auto_open=auto_open)
         print(name + " graphed - scatter")
 
 
