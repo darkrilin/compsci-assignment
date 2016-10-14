@@ -78,21 +78,35 @@ def plotly_scatter(filename, auto_open=True):
         extractedfile = extractmatlab(file)
         coordinates = vals_to_coords(extractedfile)
 
-        trace = go.Scatter(
-            x=[i[0] for i in coordinates],
-            y=[i[1] for i in coordinates],
-            mode='markers'
-        )
-        layout = go.Layout(
-            title="Scatter: "+file[file.find('/')+1::]
-        )
+        x = [[] for i in range(10)]
+        y = [[] for i in range(10)]
+        fig = tools.make_subplots(rows=10, cols=1, shared_xaxes=True, shared_yaxes=True, vertical_spacing=0)
 
-        # TODO: separate sections into subplots
+        for i in coordinates:
+            n = floor(i[1])-1
+            x[n].append(i[0])
+            y[n].append(i[1])
+
+        for i in range(len(x)):
+            fig.append_trace(
+                go.Scatter(
+                    x = x[i],
+                    y = y[i],
+                    mode = "markers",
+                    hoverinfo = "x",
+                    marker = dict(
+                        color = ["#000000"]
+                    )),
+                len(x)-i, 1)
+
+        fig['layout'].update(title = "Scatter: "+file[file.find('/')+1::],
+                             showlegend = False)
+
+        # TODO: Fix y axis labels, perhaps use annotations
 
         name = file.replace('.mat', '') + '_scatter.html'
-        plot(go.Figure(data=[trace], layout=layout), filename=name, auto_open=auto_open)
+        plot(fig, filename=name, auto_open=auto_open)
         print(name + " graphed - scatter")
-
 
 
 def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
@@ -136,7 +150,7 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
             title="Heatmap: "+file[file.find('/')+1::]
         )
 
-        # TODO: separate sections into subplots
+        # TODO: fix axis labels
 
         name = file.replace('.mat', '') + '_heatmap.html'
         plot(go.Figure(data=trace, layout=layout), filename=name, auto_open=auto_open)
@@ -148,5 +162,6 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
 
 # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- #
 if __name__ == '__main__':
-    plotly_heatmap('temp/659605_rec03_all.mat')
-    #plotly_scatter('temp/659605_rec03_all.mat')
+    # plotly_heatmap('temp/659605_rec03_all.mat')
+    # help(go.XAxis)
+    plotly_scatter('temp/659601_rec03_all.mat')
