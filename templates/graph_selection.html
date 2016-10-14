@@ -9,22 +9,18 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $("#scatter").click(function(){
-                window.location.replace('/scatter');
+                //window.location.replace('/scatter');
             });
             $("#heatmap").click(function(){
-                window.location.replace('/heatmap');
+                //window.location.replace('/heatmap');
             });
         });
     </script>
 </head>
 <body>
-    <div class="center">
-        <div style="display:inline; position:relative; z-index:100;">
-            <button id="scatter" class="importbtn" style="">Scatter Plot</button>
-        </div>
-        <div style="display:inline; position:relative; z-index:100;">
-            <button id="heatmap" class="importbtn" style="">Heatmap</button>
-        </div>
+    <div class="center" style="text-align:center;">
+        <a class="selectbutton" id="scatter" href="/scatter">Scatter Plot</a>
+        <a class="selectbutton" id="heatmap" href="/heatmap">Heatmap</a>
     </div>
 </body>
 </html>
