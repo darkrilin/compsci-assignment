@@ -116,3 +116,6 @@ html,body{
     padding-bottom:13px;
 }
 
+.selectbutton:hover {
+    background-color: #2d56aa;
+}
