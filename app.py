@@ -110,9 +110,13 @@ def insert_substring(main_string, substring, index):
 
 
 HEROKU = os.environ.get('HEROKU', 0)
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
-if HEROKU:
-    PORT = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=PORT)
+app.secret_key = os.environ.get('SECRET_KEY', None)
+if app.secret_key == None:
+    print("Secret key not found. Exiting app.")
+    exit
 else:
-    app.run(host='localhost')
+    if HEROKU:
+        PORT = int(os.environ.get('PORT', 5000))
+        app.run(host='0.0.0.0', port=PORT)
+    else:
+        app.run(host='localhost')
