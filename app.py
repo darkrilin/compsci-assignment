@@ -16,7 +16,7 @@ def allowed_file(filename):
 
 def ensure_dir(f):
     d = os.path.dirname(f)
-    if not os.path.exists(d):
+    if not os.path.isdir(d):
         os.makedirs(d)
 
 
@@ -113,7 +113,7 @@ HEROKU = os.environ.get('HEROKU', 0)
 app.secret_key = os.environ.get('SECRET_KEY', None)
 if app.secret_key == None:
     print("Secret key not found. Exiting app.")
-    exit
+    exit()
 else:
     if HEROKU:
         PORT = int(os.environ.get('PORT', 5000))
