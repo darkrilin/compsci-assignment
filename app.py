@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import main
 import os
 
-UPLOAD_FOLDER = '/uploads/'
+UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'mat'}
 
 app = Flask(__name__)
