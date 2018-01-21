@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import main
 import os
 
-UPLOAD_FOLDER = 'uploads/'
+UPLOAD_FOLDER = '/uploads/'
 ALLOWED_EXTENSIONS = {'mat'}
 
 app = Flask(__name__)
@@ -137,7 +137,10 @@ if app.secret_key == None:
     exit()
 else:
     if HEROKU:
+        UPLOAD_FOLDER = "uploads/"
         PORT = int(os.environ.get('PORT', 5000))
         app.run(host='0.0.0.0', port=PORT)
     else:
+        UPLOAD_FOLDER = '/uploads/'
         app.run(host='localhost')
+
