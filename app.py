@@ -3,12 +3,13 @@ from werkzeug.utils import secure_filename
 import main
 import os
 
-UPLOAD_FOLDER = '/uploads/'
+UPLOAD_FOLDER = 'uploads/'
 ALLOWED_EXTENSIONS = {'mat'}
 HEROKU = os.environ.get('HEROKU', 0)
 
-if HEROKU == 1:
-    UPLOAD_FOLDER = "uploads/"
+if HEROKU == 0:
+    print("Offline")
+    UPLOAD_FOLDER = "/uploads/"
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
