@@ -3,8 +3,12 @@ from werkzeug.utils import secure_filename
 import main
 import os
 
-UPLOAD_FOLDER = 'uploads/'
+UPLOAD_FOLDER = '/uploads/'
 ALLOWED_EXTENSIONS = {'mat'}
+HEROKU = os.environ.get('HEROKU', 0)
+
+if HEROKU == 1:
+    UPLOAD_FOLDER = "uploads/"
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -134,17 +138,13 @@ def insert_substring(main_string, substring, index):
     return main_string[:index] + substring + main_string[index:]
 
 
-HEROKU = os.environ.get('HEROKU', 0)
 app.secret_key = os.environ.get('SECRET_KEY', None)
 if app.secret_key == None:
     print("Secret key not found. Exiting app.")
     exit()
 else:
     if HEROKU:
-        UPLOAD_FOLDER = "uploads/"
         PORT = int(os.environ.get('PORT', 5000))
         app.run(host='0.0.0.0', port=PORT)
     else:
-        UPLOAD_FOLDER = '/uploads/'
         app.run(host='localhost')
-
