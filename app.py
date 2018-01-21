@@ -119,6 +119,7 @@ def graph_file(filename):
         start_index = file_html.find('<body>') + len('<body>')
         sub = '<button id="back" style="z-index:1000;position:absolute;background-color: #447bdc;color: white;padding: 14px;font-size: 16px;border: none;cursor: pointer;min-width: 300px;min-height: 50px;margin-left:auto;margin-right:auto;border-radius: 5px;text-transform: uppercase;">Back</button><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
         file_html = insert_substring(file_html, sub, start_index)
+
         start_index = file_html.find('<script type="text/javascript">') + len('<script type="text/javascript">')
         sub = '$(document).ready(function(){$("#back").click(function(){window.location.replace("/select");});});'
         file_html = insert_substring(file_html, sub, start_index)
