@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 import main
 import os
 
-UPLOAD_FOLDER = 'uploads/'
+UPLOAD_FOLDER = '/uploads/'
 ALLOWED_EXTENSIONS = {'mat'}
 
 app = Flask(__name__)
@@ -27,41 +27,62 @@ def show_main():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    scatter = True if request.form['scatter'] == 'true' else False
-    heatmap = True if request.form['heatmap'] == 'true' else False
+    scatter = False
+    heatmap = False
+
+    if request.form['scatter'] == 'true':
+        scatter = True
+
+    if request.form['heatmap'] == 'true':
+        heatmap = True
+
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
+            print("Redirecting to request URL")
             return redirect(request.url)
+
         file = request.files['file']
+
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
+            print("Redirecting to request URL")
             return redirect(request.url)
+
         if file and allowed_file(file.filename):
+
             filename = secure_filename(file.filename)
-            ensure_dir(app.config['UPLOAD_FOLDER'])
-            file.save(app.config['UPLOAD_FOLDER'] + filename)
+
+            try:
+                ensure_dir(app.config['UPLOAD_FOLDER'])
+                file.save(app.config['UPLOAD_FOLDER'] + filename)
+            except PermissionError:
+                return redirect('/static/uploaderror.html')
+
             try:
                 if heatmap:
                     main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
+                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
+
                 if scatter:
                     main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
-                os.remove(app.config['UPLOAD_FOLDER'] + filename)
-                if heatmap and scatter:
-                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
                     session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
+
+                os.remove(app.config['UPLOAD_FOLDER'] + filename)
+
+                if heatmap and scatter:
                     session['menu_active'] = True
                     return redirect('/select')
+
                 elif heatmap:
                     session['menu_active'] = False
-                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
                     if 'scatter_path' in session:
                         session.pop('scatter_path', None)
                     return redirect('/graph/' + filename[:-4] + '_heatmap' + '.html')
+
                 elif scatter:
                     session['menu_active'] = False
-                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
                     if 'heatmap_path' in session:
                         session.pop('heatmap_path', None)
                     return redirect('/graph/' + filename[:-4] + '_scatter' + '.html')

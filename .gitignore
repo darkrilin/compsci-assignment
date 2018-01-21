@@ -141,3 +141,7 @@ $RECYCLE.BIN/
 .idea/.name
 .idea/modules.xml
 *.xml
+
+# CUSTOM
+temp/
+.idea/
