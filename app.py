@@ -71,13 +71,17 @@ def upload_file():
 
                 if heatmap and scatter:
                     session['menu_active'] = True
+                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
+                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
                     return redirect('/select')
+
                 elif heatmap:
                     session['menu_active'] = False
                     session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
                     if 'scatter_path' in session:
                         session.pop('scatter_path', None)
                     return redirect('/graph/' + filename[:-4] + '_heatmap' + '.html')
+
                 elif scatter:
                     session['menu_active'] = False
                     session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
