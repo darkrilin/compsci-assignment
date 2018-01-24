@@ -70,7 +70,7 @@ def upload_file():
                     main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
 
                 if scatter:
-                    main.plotly_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+                    main.bokeh_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
 
                 os.remove(app.config['UPLOAD_FOLDER'] + filename)
 

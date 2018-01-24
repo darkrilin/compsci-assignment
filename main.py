@@ -5,6 +5,8 @@ import plotly.graph_objs as go
 from plotly.offline import plot
 from plotly import tools
 
+from bokeh.plotting import figure, show, output_file, save
+
 from time import process_time
 
 
@@ -182,6 +184,52 @@ def plotly_scatter(filename, auto_open=True):
         plot(fig, filename=name, auto_open=auto_open)
         print(name + " graphed - scatter")
 
+
+def bokeh_scatter(filename, auto_open=True):
+    if type(filename) is not list:
+        filename = [filename]
+
+    for file in filename:
+
+        extracted_file = extract_matlab_all(file)
+        coordinates = vals_to_coords(extracted_file)
+        print("data size: " + str(len(coordinates)))
+
+        n = []
+        x = []
+        y = []
+        for i in coordinates:
+            n.append(floor(i[1]))
+            x.append(i[0])
+            y.append(i[1]-1)
+
+
+        TOOLS = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
+
+        p = figure(tools=TOOLS, title="Scatter Plot: " + file[file.find('/')+1::])
+        p.scatter(x, y, radius=0.2, fill_alpha=0.8, line_color=None, color="black")
+
+        p.sizing_mode = "stretch_both"
+        p.border_fill_color = "whitesmoke"
+        p.min_border_left = 80
+        p.min_border_right = 80
+        p.min_border_bottom = 80
+        p.xaxis.axis_label = "Time (ms)"
+        p.yaxis.axis_label = "Amplitude"
+
+        for i in range(11):
+            p.line((0, 50), (i, i), color="black", alpha=0.5)
+
+        name = file.replace('.mat', '') + '_scatter.html'
+        title = "Scatter Plot: " + file[file.find('/')+1::]
+        output_file(name, title)
+        
+        if auto_open:
+            show(p)
+        else:
+            save(p)
+
+
 def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
 
     if type(filename) is not list:
@@ -233,10 +281,13 @@ def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=Tru
 
 # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- #
 if __name__ == '__main__':
-    print("Hello, World!")
+    # print("Hello, World!")
     # help(go.XAxis)
-    plotly_scatter('temp/659601_rec03_all.mat')
-    plotly_heatmap('temp/659601_rec03_all.mat')
+    #plotly_scatter('temp/659601_rec03_all.mat')
+    #plotly_heatmap('temp/659601_rec03_all.mat')
+
+    plotly_scatter('temp/659607_rec03_all.mat')
+    bokeh_scatter('temp/659607_rec03_all.mat')
 
     #print(extract_old('temp/659601_rec03_all.mat'))
     #print(extract_matlab_all('temp/659601_rec03_all.mat'))
