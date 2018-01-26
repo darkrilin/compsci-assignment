@@ -1,21 +1,11 @@
-from math import floor, hypot
+from math import floor
 import scipy.io as sio
 
-import plotly.graph_objs as go
-from plotly.offline import plot
-from plotly import tools
+from bokeh.plotting import figure, show, output_file, save, ColumnDataSource
+from bokeh.models import HoverTool, CrosshairTool, PanTool, WheelZoomTool, UndoTool, \
+    RedoTool, ResetTool, SaveTool, PolySelectTool
 
-from bokeh.plotting import figure, show, output_file, save
-
-from time import process_time
-
-
-# Color scales
-cs_default = ['#EB3821', '#DDE22A', '#67BB47', '#6FCBD5', '#354D9D', '#D2D0E9']
-cs_magma = ['#FBFABD', '#FD9A69', '#E85461', '#842681', '#360F6B', '#000000']
-cs_heatmap = ['rgb(165,0,38)', 'rgb(215,48,39)', 'rgb(244,109,67)', 'rgb(253,174,97)', 'rgb(254,224,144)',
-              'rgb(224,243,248)', 'rgb(171,217,233)', 'rgb(116,173,209)', 'rgb(69,117,180)', 'rgb(49,54,149)']
-cs_greyscale = ['rgb(0,0,0)', 'rgb(255,255,255)']
+import numpy as np
 
 
 # Different ways of extracting the matlab files - or their varying structure standards
@@ -128,69 +118,11 @@ def vals_to_coords(vals):
 
 
 # Main plotting functions (call this from other code)
-def plotly_scatter(filename, auto_open=True):
+def bokeh_scatter(filename, auto_open=True, colour="black"):
     if type(filename) is not list:
         filename = [filename]
 
     for file in filename:
-        extracted_file = extract_matlab_all(file)
-        coordinates = vals_to_coords(extracted_file)
-
-        x = [[] for i in range(10)]
-        y = [[] for i in range(10)]
-        fig = tools.make_subplots(rows=10, cols=1, shared_xaxes=True, shared_yaxes=True, vertical_spacing=0)
-
-        for i in coordinates:
-            n = floor(i[1])-1
-            x[n].append(i[0])
-            y[n].append(i[1])
-
-        for i in range(len(x)):
-            fig.append_trace(
-                go.Scatter(
-                    x = x[i],
-                    y = y[i],
-                    yaxis = 'y'+str(i+1),
-                    mode = "markers",
-                    hoverinfo = "x",
-                    marker = dict(
-                        color = ["#000000"]
-                    )),
-                len(x)-i, 1
-            )
-
-        fig['layout'].update(title = "Scatter: "+file[file.find('/')+1::],
-                             showlegend = False,
-                             yaxis1 = dict(showticklabels = False),
-                             yaxis2 = dict(showticklabels = False),
-                             yaxis3 = dict(showticklabels = False),
-                             yaxis4 = dict(showticklabels = False),
-                             yaxis5 = dict(showticklabels = False, title = "Amplitude"),
-                             yaxis6 = dict(showticklabels = False),
-                             yaxis7 = dict(showticklabels = False),
-                             yaxis8 = dict(showticklabels = False),
-                             yaxis9 = dict(showticklabels = False),
-                             yaxis10 = dict(showticklabels = False),
-                             annotations = [
-                                 dict(
-                                     x = -0.015, y = 0.965-i*0.1035,
-                                     text = str(10-i), showarrow = False,
-                                     xref = 'paper', yref = "paper", align = "center") for i in range(10)
-                             ])
-
-        # TODO: Fix y axis labels, perhaps use annotations
-
-        name = file.replace('.mat', '') + '_scatter.html'
-        plot(fig, filename=name, auto_open=auto_open)
-        print(name + " graphed - scatter")
-
-
-def bokeh_scatter(filename, auto_open=True):
-    if type(filename) is not list:
-        filename = [filename]
-
-    for file in filename:
-
         extracted_file = extract_matlab_all(file)
         coordinates = vals_to_coords(extracted_file)
         print("data size: " + str(len(coordinates)))
@@ -203,11 +135,10 @@ def bokeh_scatter(filename, auto_open=True):
             x.append(i[0])
             y.append(i[1]-1)
 
-
         TOOLS = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
 
         p = figure(tools=TOOLS, title="Scatter Plot: " + file[file.find('/')+1::])
-        p.scatter(x, y, radius=0.2, fill_alpha=0.8, line_color=None, color="black")
+        p.scatter(x, y, radius=0.1, fill_alpha=0.8, line_color=None, color=colour)
 
         p.sizing_mode = "stretch_both"
         p.border_fill_color = "whitesmoke"
@@ -218,7 +149,7 @@ def bokeh_scatter(filename, auto_open=True):
         p.yaxis.axis_label = "Amplitude"
 
         for i in range(11):
-            p.line((0, 50), (i, i), color="black", alpha=0.5)
+            p.line((0, 50), (i, i), color=colour, alpha=0.5)
 
         name = file.replace('.mat', '') + '_scatter.html'
         title = "Scatter Plot: " + file[file.find('/')+1::]
@@ -230,52 +161,100 @@ def bokeh_scatter(filename, auto_open=True):
             save(p)
 
 
-def plotly_heatmap(filename, w=800, h=-1, radius=60, smooth=False, auto_open=True):
-
+def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radius=12):
     if type(filename) is not list:
         filename = [filename]
-    radius = int(radius * (w / 2500))
-    width = w
 
     for file in filename:
-
         extracted_file = extract_matlab_all(file)
-        if h == -1:
-            height = len(extracted_file)
-        else:
-            height = h
+        coordinates = vals_to_coords(extracted_file)
+        print("data size: " + str(len(coordinates)))
 
-        heatmap = [[0 for i in range(width)] for j in range(height)]
-        for k in vals_to_coords(extracted_file):
-            _x = floor(k[0] * width // 50)
-            _y = floor(k[1] * height // 11)
-            x1, x2 = max(0, min(width, _x - radius)), max(0, min(width, _x + radius))
-            y1, y2 = max(0, min(height, _y - radius)), max(0, min(height, _y + radius))
-            for i in range(x1, x2):
-                for j in range(y1, y2):
-                    pythag = hypot(_x - i, _y - j)
-                    if pythag <= radius:
-                        if smooth:
-                            heatmap[j][i] += 1 - (pythag / radius) ** 1 / 2
-                        else:
-                            heatmap[j][i] += 1
+        # Process data points for scatter plot
+        n = []
+        x = []
+        y = []
+        for i in coordinates:
+            n.append(floor(i[1]))
+            x.append(i[0])
+            y.append(i[1] - 1)
 
-        trace = [{
-            'type': 'heatmap',
-            'z': heatmap,
-            'x': ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
-            'hoverinfo': 'z',
-            'colorscale': -1,
-        }]
-        layout = go.Layout(
-            title="Heatmap: "+file[file.find('/')+1::]
+        # Configure data and hovertext
+        source = ColumnDataSource(data=dict(
+            x=x,
+            y=y,
+            time=x,
+            amp=n
+        ))
+        Hover = HoverTool(
+            tooltips=[
+                ("time", "@time ms"),
+                ("amplitude", "@amp")
+            ],
+            names=["dots"]
         )
 
-        # TODO: fix axis labels
 
-        name = file.replace('.mat', '') + '_heatmap.html'
-        plot(go.Figure(data=trace, layout=layout), filename=name, auto_open=auto_open)
-        print(name + " graphed - heatmap")
+        # GENERATE PLOT WITH CUSTOM PROPERTIES
+        TOOLS = [Hover, CrosshairTool(), PanTool(), WheelZoomTool(), UndoTool(), RedoTool(), ResetTool(), SaveTool(), PolySelectTool()]
+        p = figure(tools=TOOLS, title="Composite Plot: " + file[file.find('/') + 1::], plot_width=50, plot_height=10)
+
+        p.sizing_mode = "stretch_both"
+        p.border_fill_color = "whitesmoke"
+        p.min_border_left = 80
+        p.min_border_right = 80
+        p.min_border_bottom = 80
+        p.xaxis.axis_label = "Time (ms)"
+        p.yaxis.axis_label = "Amplitude"
+
+
+        # ADD HEATMAP
+        raw = np.zeros((h, w))
+        top = 0
+
+        # TODO: CLEAN UP CIRCLE CODE
+        for pos in coordinates:
+            x_pos = floor((pos[1]-1)/10*h)
+            y_pos = floor(pos[0]/50*w)
+            for i in range(-radius, radius+1):
+                for j in range(-radius, radius+1):
+                    x_pos_2 = x_pos+i
+                    y_pos_2 = y_pos+j
+                    if x_pos_2 >= 0 and x_pos_2 < h:
+                        if y_pos_2 >= 0 and y_pos_2 < w:
+                            if i*i + j*j < radius*radius:
+                                raw[x_pos_2, y_pos_2] += 1
+                                if raw[x_pos_2, y_pos_2] > top:
+                                    top = raw[x_pos_2, y_pos_2]
+        # Normalize
+        for j in range(w):
+            for i in range(h):
+                raw[i, j] = (raw[i, j] / top)
+                raw[i, j] = 1 - raw[i, j] #Invert data for colourmap
+
+        p.image(image=[raw], x=0, y=0, dw=50, dh=10, palette="Inferno256")#"YlOrBr9")#
+
+
+        # ADD SCATTER MAP
+        p.scatter('x', 'y', radius=0.1, fill_alpha=0.8, line_color=None, color=colour, source=source, name="dots")
+
+
+        # ADD AMPLITUDE LINES
+        for i in range(11):
+            p.line((0, 50), (i, i), color=colour, alpha=0.5)
+
+
+        # SAVE AND SHOW PLOT
+        name = file.replace('.mat', '') + '_composite.html'
+        title = "Composite Plot: " + file[file.find('/') + 1::]
+        output_file(name, title)
+
+        if auto_open:
+            show(p)
+        else:
+            save(p)
+
+
 
 
 
@@ -286,8 +265,8 @@ if __name__ == '__main__':
     #plotly_scatter('temp/659601_rec03_all.mat')
     #plotly_heatmap('temp/659601_rec03_all.mat')
 
-    plotly_scatter('temp/659607_rec03_all.mat')
-    bokeh_scatter('temp/659607_rec03_all.mat')
+    #plotly_scatter('temp/659607_rec03_all.mat')
+    bokeh_composite('temp/659607_rec03_all.mat')
 
     #print(extract_old('temp/659601_rec03_all.mat'))
     #print(extract_matlab_all('temp/659601_rec03_all.mat'))

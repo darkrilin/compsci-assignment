@@ -37,9 +37,10 @@
             $(".submitbtn").on("click", function(){
                 if($("#theFile").get(0).files.length != 0){
                     if(allowed_file($("#theFile").get(0).files[0].name)){
+                        /*
                         scatter = $("#scatter").is(":checked");
                         heatmap = $("#heatmap").is(":checked");
-                        if(scatter|| heatmap){
+                        if(scatter||heatmap){
                             $("#uploadbox").show();
                             $("#greyout").show();
                             $("#target").append('<input name="scatter" type="text" value="'+scatter+'" />');
@@ -48,7 +49,10 @@
                         }
                         else{
                             alert("Please select a graph type");
-                        }
+                        }*/
+                        $("#uploadbox").show();
+                        $("#greyout").show();
+                        $("#target").submit();
                     }
                     else{
                         alert("Please select a file with the extension '.mat'");
@@ -76,12 +80,14 @@
                         <div>
                             <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100;">
                                 <button class="importbtn" style="">Import MATLAB File</button>
+                                <!--
                                 <div style="position:absolute; text-align:initial; left:103%; min-width:200px; bottom: 5px;">
                                     <form id="checkbox" action="/checksubmit">
                                         <label><input id="scatter" type="checkbox" name="graph" value="scatter"> Scatter Plot</label><br>
                                         <label><input id="heatmap" type="checkbox" name="graph" value="heatmap"> Heatmap Plot</label><br>
                                     </form>
                                 </div>
+                                -->
                             </div>
                         </div>
                         <div style="position:relative; text-align:center;">
@@ -99,8 +105,8 @@
         <input id="theFile" name="file" type="file" accept=".mat" style="position: fixed; top: -100em">
     </form>
     <div id="footer">
-		<p>© William Stark and Riley Taylor, 2016-2018.</p>
-        <p>If you're having any issues, <a href="mailto:rileyjtaylor4@gmail.com">email us.</a></p>
+		<p>© Riley Taylor and William Stark, 2016-2018.</p>
+        <p>If you're having any issues, <a href="mailto:rjtaylor707@gmail.com">email us.</a></p>
 	</div>
 </body>
 </html>
