@@ -95,6 +95,11 @@ def graph_file(filename):
     return file_html
 
 
+@app.route('/example/')
+def show_example():
+    return render_template('example.html')
+
+
 def insert_substring(main_string, substring, index):
     return main_string[:index] + substring + main_string[index:]
 
