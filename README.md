@@ -1,8 +1,8 @@
 # Rat Graphing
 
-**Using python, flask, and bokeh to plot neuronal activity from the stimulution of rats' whiskers.**
+**Using python, flask, and bokeh to plot neuronal activity from the stimulation of rats' whiskers.**
 
-This project occured under collaboration with Monash University and John Monash Science School in an attempt to educate students in data science. 
+This project occurred under collaboration with Monash University and John Monash Science School in an attempt to educate students in data science. 
 Most projects only result in basic plotting of the data, but this is an attempt to extend my own programming knowledge and data skills, hopefully creating a tool which can be used for real world analysis of neuronal activity.
 
 
