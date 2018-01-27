@@ -32,17 +32,6 @@ def show_main():
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    """
-    scatter = False
-    heatmap = False
-
-    if request.form['scatter'] == 'true':
-        scatter = True
-
-    if request.form['heatmap'] == 'true':
-        heatmap = True
-    """
-
     if request.method == 'POST':
         # check if the post request has the file part
         if 'file' not in request.files:
@@ -64,68 +53,22 @@ def upload_file():
             try:
                 ensure_dir(app.config['UPLOAD_FOLDER'])
                 file.save(app.config['UPLOAD_FOLDER'] + filename)
+
             except PermissionError:
                 return redirect('/static/uploaderror.html')
 
             try:
-                # TEMPORARILY REMOVING OPTIONS
-                """
-                if heatmap:
-                    main.plotly_heatmap(app.config['UPLOAD_FOLDER'] + filename, radius=80, auto_open=False)
-
-                if scatter:
-                    main.bokeh_scatter(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
-
-                os.remove(app.config['UPLOAD_FOLDER'] + filename)
-                
-                if heatmap and scatter:
-                    session['menu_active'] = True
-                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
-                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
-                    return redirect('/select')
-
-                elif heatmap:
-                    session['menu_active'] = False
-                    session['heatmap_path'] = '/graph/' + filename[:-4] + '_heatmap' + '.html'
-                    if 'scatter_path' in session:
-                        session.pop('scatter_path', None)
-                    return redirect('/graph/' + filename[:-4] + '_heatmap' + '.html')
-
-                elif scatter:
-                    session['menu_active'] = False
-                    session['scatter_path'] = '/graph/' + filename[:-4] + '_scatter' + '.html'
-                    if 'heatmap_path' in session:
-                        session.pop('heatmap_path', None)
-                    return redirect('/graph/' + filename[:-4] + '_scatter' + '.html')
-                """
-
                 main.bokeh_composite(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
 
                 session['menu_active'] = False # Disable 'BACK' button
                 session['composite_path'] = '/graph/' + filename[:-4] + '_composite' + '.html'
                 return redirect('/graph/' + filename[:-4] + '_composite' + '.html')
 
-
             except KeyError:
                 return redirect('/static/keyerror.html')
 
         return redirect("/")
 
-
-"""
-@app.route('/select/')
-def select():
-    return render_template('graph_selection.html')
-
-@app.route('/scatter')
-def scatter_selected():
-    return redirect(session['scatter_path'])
-
-
-@app.route('/heatmap')
-def heatmap_selected():
-    return redirect(session['heatmap_path'])
-"""
 
 @app.route('/composite')
 def composite_selected():

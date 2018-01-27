@@ -37,19 +37,6 @@
             $(".submitbtn").on("click", function(){
                 if($("#theFile").get(0).files.length != 0){
                     if(allowed_file($("#theFile").get(0).files[0].name)){
-                        /*
-                        scatter = $("#scatter").is(":checked");
-                        heatmap = $("#heatmap").is(":checked");
-                        if(scatter||heatmap){
-                            $("#uploadbox").show();
-                            $("#greyout").show();
-                            $("#target").append('<input name="scatter" type="text" value="'+scatter+'" />');
-                            $("#target").append('<input name="heatmap" type="text" value="'+heatmap+'" />');
-                            $("#target").submit();
-                        }
-                        else{
-                            alert("Please select a graph type");
-                        }*/
                         $("#uploadbox").show();
                         $("#greyout").show();
                         $("#target").submit();
@@ -80,14 +67,6 @@
                         <div>
                             <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100;">
                                 <button class="importbtn" style="">Import MATLAB File</button>
-                                <!--
-                                <div style="position:absolute; text-align:initial; left:103%; min-width:200px; bottom: 5px;">
-                                    <form id="checkbox" action="/checksubmit">
-                                        <label><input id="scatter" type="checkbox" name="graph" value="scatter"> Scatter Plot</label><br>
-                                        <label><input id="heatmap" type="checkbox" name="graph" value="heatmap"> Heatmap Plot</label><br>
-                                    </form>
-                                </div>
-                                -->
                             </div>
                         </div>
                         <div style="position:relative; text-align:center;">

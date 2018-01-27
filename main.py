@@ -2,11 +2,10 @@ from math import floor
 import scipy.io as sio
 
 from bokeh.plotting import figure, show, output_file, save, ColumnDataSource
-from bokeh.models import HoverTool, CrosshairTool, PanTool, WheelZoomTool, UndoTool, \
-    RedoTool, ResetTool, SaveTool, PolySelectTool, CustomJS
+from bokeh.models import HoverTool, CrosshairTool, PanTool, WheelZoomTool, ResetTool, SaveTool, CustomJS
 
-from bokeh.models.widgets import CheckboxGroup, Button
-from bokeh.layouts import widgetbox, layout, row, column
+from bokeh.models.widgets import Button
+from bokeh.layouts import widgetbox, row, column
 
 import matplotlib as plt
 import matplotlib.cm as cm
@@ -185,7 +184,6 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
 
         # ADD HEATMAP
         raw = np.zeros((h, w))
-        top = 0
 
         # TODO: CLEAN UP CIRCLE CODE, OPTIMISE THE SHIT OUT OF IT
         for pos in coordinates:
@@ -199,24 +197,17 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
                         if y_pos_2 >= 0 and y_pos_2 < w:
                             if i*i + j*j < radius*radius:
                                 raw[x_pos_2, y_pos_2] += 1
-                                if raw[x_pos_2, y_pos_2] > top:
-                                    top = raw[x_pos_2, y_pos_2]
-        # Normalize
-        for j in range(w):
-            for i in range(h):
-                raw[i, j] = (raw[i, j] / top)
-                raw[i, j] = 1 - raw[i, j] #Invert data for colourmap
 
         # Fetch matplotlib colourmaps, convert to bokeh
         colormap = cm.get_cmap("RdPu")
-        bokehpalette = [plt.colors.rgb2hex(m) for m in colormap(np.arange(colormap.N))][::-1]
+        bokehpalette = [plt.colors.rgb2hex(m) for m in colormap(np.arange(colormap.N))]
 
         # Render image
         image = p.image(image=[raw], x=0, y=0, dw=50, dh=10, palette=bokehpalette)#"Inferno256")#"YlOrBr9")
 
 
         # ADD SCATTER MAP
-        scatter = p.scatter('x', 'y', radius=0.1, fill_alpha=0.8, line_color=None, color=colour, source=source, name="dots")
+        scatter = p.scatter('x', 'y', radius=0.07, fill_alpha=0.8, line_color=None, color=colour, source=source, name="dots")
 
 
         # ADD AMPLITUDE LINES
@@ -268,7 +259,7 @@ if __name__ == '__main__':
     #plotly_heatmap('temp/659601_rec03_all.mat')
 
     #plotly_scatter('temp/659607_rec03_all.mat')
-    bokeh_composite('temp/659607_rec03_all.mat')
+    bokeh_composite('temp/659607_rec03_all.mat', radius=10)
 
     #print(extract_old('temp/659601_rec03_all.mat'))
     #print(extract_matlab_all('temp/659601_rec03_all.mat'))
