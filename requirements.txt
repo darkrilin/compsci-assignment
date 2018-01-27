@@ -3,3 +3,4 @@ Flask==0.12.2
 scipy==1.0.0
 numpy==1.14.0
 bokeh==0.12.13
+matplotlib==2.1.2
