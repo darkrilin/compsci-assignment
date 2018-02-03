@@ -132,7 +132,7 @@ def bokeh_scatter(filename, auto_open=True, colour="black"):
             save(p)
 
 
-def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radius=12):
+def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radius=10):
     if type(filename) is not list:
         filename = [filename]
 
@@ -241,7 +241,6 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
             row([widgetbox([toggle_image, toggle_scatter], width=10)], height=50, sizing_mode="fixed")],
             sizing_mode="scale_width")
 
-
         if auto_open:
             show(doc_layout)
         else:
@@ -259,7 +258,7 @@ if __name__ == '__main__':
     #plotly_heatmap('temp/659601_rec03_all.mat')
 
     #plotly_scatter('temp/659607_rec03_all.mat')
-    bokeh_composite('temp/659607_rec03_all.mat', radius=10)
+    bokeh_composite('temp/659607_rec03_all.mat')
 
     #print(extract_old('temp/659601_rec03_all.mat'))
     #print(extract_matlab_all('temp/659601_rec03_all.mat'))
