@@ -60,7 +60,7 @@ def upload_file():
             try:
                 main.bokeh_composite(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
 
-                session['menu_active'] = False # Disable 'BACK' button
+                session['menu_active'] = False  # Disable 'BACK' button
                 session['composite_path'] = '/graph/' + filename[:-4] + '_composite' + '.html'
                 return redirect('/graph/' + filename[:-4] + '_composite' + '.html')
 
@@ -86,7 +86,10 @@ def graph_file(filename):
     file.close()
     if session['menu_active']:
         start_index = file_html.find('<body>') + len('<body>')
-        sub = '<button id="back" style="z-index:1000;position:absolute;background-color: #447bdc;color: white;padding: 14px;font-size: 16px;border: none;cursor: pointer;min-width: 300px;min-height: 50px;margin-left:auto;margin-right:auto;border-radius: 5px;text-transform: uppercase;">Back</button><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
+        sub = '<button id="back" style="z-index:1000;position:absolute;background-color: #447bdc;color: white; \
+                padding: 14px;font-size: 16px;border: none;cursor: pointer;min-width: 300px;min-height: 50px; \
+                margin-left:auto;margin-right:auto;border-radius: 5px;text-transform: uppercase;">Back</button> \
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
         file_html = insert_substring(file_html, sub, start_index)
 
         start_index = file_html.find('<script type="text/javascript">') + len('<script type="text/javascript">')
@@ -105,7 +108,7 @@ def insert_substring(main_string, substring, index):
 
 
 app.secret_key = os.environ.get('SECRET_KEY', None)
-if app.secret_key == None:
+if app.secret_key is None:
     print("Secret key not found. Exiting app.")
     exit()
 else:

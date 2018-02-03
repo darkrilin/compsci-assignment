@@ -14,13 +14,33 @@ import numpy as np
 
 
 # Different ways of extracting the matlab files - or their varying structure standards
-def extract_matlab_all(filename):
-    ### --- STRUCTURE: xxxxxx_rec03_all.mat --- ###
-    file = sio.loadmat(filename)
+def extract_matlab(filename):
+    '''
+    --- SUPPORTED FILES ---
 
-    wave_timestamp = file['Sch_wav'][0][0][4]  # Neuron pop - milliseconds since trigger
-    stim_timestamp = file['StimTrig'][0][0][4]  # Stimulus time into experiment - seconds
-    stim_amplitude = file['StimTrig'][0][0][5]  # Amplitude of particular stimulus time
+    - ******_rec03.mat
+    - ******_rec03_all.mat
+    - ******_rec03_f**.mat
+
+    '''
+    file = sio.loadmat(filename)
+    wave_key = ""
+    trig_key = "StimTrig"
+
+    # Due to naming convention variations, it must search for the right keys
+    schmitt = ["Schmitt", "Sch_wav"]
+    for i in schmitt:
+        if i in file.keys():
+            wave_key = i
+
+    if wave_key == "":
+        raise KeyError("Can't find the schmitt wave data")
+
+    # Extract data using keys
+    file_comments  = file[ wave_key ][0][0][1][0]
+    wave_timestamp = file[ wave_key ][0][0][4]  # Neuron pop - milliseconds since trigger
+    stim_timestamp = file[ trig_key ][0][0][4]  # Stimulus time into experiment - seconds
+    stim_amplitude = file[ trig_key ][0][0][5]  # Amplitude of particular stimulus time
 
     raw_values = []
     assorted_values = []
@@ -94,7 +114,7 @@ def bokeh_scatter(filename, auto_open=True, colour="black"):
         filename = [filename]
 
     for file in filename:
-        extracted_file = extract_matlab_all(file)
+        extracted_file = extract_matlab(file)
         coordinates = vals_to_coords(extracted_file)
         print("data size: " + str(len(coordinates)))
 
@@ -137,7 +157,7 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
         filename = [filename]
 
     for file in filename:
-        extracted_file = extract_matlab_all(file)
+        extracted_file = extract_matlab(file)
         coordinates = vals_to_coords(extracted_file)
         print("data size: " + str(len(coordinates)))
 
@@ -252,13 +272,8 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
 
 # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- #
 if __name__ == '__main__':
-    # print("Hello, World!")
-    # help(go.XAxis)
-    #plotly_scatter('temp/659601_rec03_all.mat')
-    #plotly_heatmap('temp/659601_rec03_all.mat')
+    print("Make sure you're running app.py if you want the web interface")
+    print("This code is just for debugging functions")
 
-    #plotly_scatter('temp/659607_rec03_all.mat')
-    bokeh_composite('temp/659607_rec03_all.mat')
-
-    #print(extract_old('temp/659601_rec03_all.mat'))
-    #print(extract_matlab_all('temp/659601_rec03_all.mat'))
+    #bokeh_scatter('temp/659607_rec03_all.mat')
+    #bokeh_composite('temp/659607_rec03_all.mat')
