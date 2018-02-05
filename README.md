@@ -19,7 +19,7 @@ Pictured is a heatmap and scatter plot of neuron activity over time (the horizon
 Each layer may be toggled to be looked at individually, and the graph can be zoomed in and manipulated to assist with analysis of certain features.
 
 If you want to have a better look, there's an interactive version here:
-> https://starkrats.herokuapp.com/example/
+> https://starkrats.herokuapp.com/example
 
 ---
 
