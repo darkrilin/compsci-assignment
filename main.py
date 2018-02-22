@@ -110,6 +110,7 @@ def vals_to_coords(vals):
 
 # Main plotting functions (call this from other code)
 def bokeh_scatter(filename, auto_open=True, colour="black"):
+
     if type(filename) is not list:
         filename = [filename]
 
@@ -153,8 +154,11 @@ def bokeh_scatter(filename, auto_open=True, colour="black"):
 
 
 def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radius=10):
+
     if type(filename) is not list:
         filename = [filename]
+
+    print(filename)
 
     for file in filename:
         extracted_file = extract_matlab(file)

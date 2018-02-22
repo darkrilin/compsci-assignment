@@ -16,6 +16,10 @@ html,body{
     display: flex;
     flex-flow: column;
     height: 100%;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
 }
 
 .centerpretty{
@@ -35,8 +39,14 @@ html,body{
     z-index:1000;
 }
 
-#importfilecontainer{
-    flex: 1 1 auto;
+pre {
+    font-family: 'Open Sans',verdana,arial,sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */
 }
 
 #header{
@@ -65,8 +75,8 @@ html,body{
     cursor: pointer;
     min-width: 400px;
     min-height: 50px;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 5px;
     text-transform: uppercase;
 }
@@ -80,8 +90,8 @@ html,body{
     cursor: pointer;
     min-width: 400px;
     min-height: 50px;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 5px;
     text-transform: uppercase;
 }
@@ -102,17 +112,17 @@ html,body{
     cursor: pointer;
     min-width: 400px;
     min-height: 25px;
-    margin-left:auto;
-    margin-right:auto;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 5px;
     text-transform: uppercase;
-    max-height:50px;
-    position:relative;
-    display:inline-block;
-    text-decoration:none;
-    vertical-align:middle;
+    max-height: 50px;
+    position: fixed;
+    display: inline-block;
+    text-decoration: none;
+    vertical-align: middle;
     margin-top: 10px;
-    padding-top:15px;
+    padding-top: 15px;
     padding-bottom:13px;
 }
 

@@ -38,34 +38,41 @@ def upload_file():
             print("Redirecting to request URL")
             return redirect(request.url)
 
-        file = request.files['file']
+        #file = request.files['file']
+        uploaded_files = request.files.getlist("file")
+        print(uploaded_files)
 
-        # if user does not select file, browser also
-        # submit a empty part without filename
-        if file.filename == '':
+
+        if (len(uploaded_files)) == 0:
             print("Redirecting to request URL")
             return redirect(request.url)
 
-        if file and allowed_file(file.filename):
 
-            filename = secure_filename(file.filename)
+        for file in uploaded_files:
+            print(file.filename)
 
-            try:
-                ensure_dir(app.config['UPLOAD_FOLDER'])
-                file.save(app.config['UPLOAD_FOLDER'] + filename)
+            # TODO: LOOP THROUGH FILES, SAVE EACH INDIVIDUAL ONE
+            # TODO: THEN PASS THROUGH A LIST OF FILES TO BE PROCESSED BY PYTHON
 
-            except PermissionError:
-                return redirect('/static/uploaderror.html')
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
 
-            try:
-                main.bokeh_composite(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+                try:
+                    ensure_dir(app.config['UPLOAD_FOLDER'])
+                    file.save(app.config['UPLOAD_FOLDER'] + filename)
 
-                session['menu_active'] = False  # Disable 'BACK' button
-                session['composite_path'] = '/graph/' + filename[:-4] + '_composite' + '.html'
-                return redirect('/graph/' + filename[:-4] + '_composite' + '.html')
+                except PermissionError:
+                    return redirect('/static/uploaderror.html')
 
-            except KeyError:
-                return redirect('/static/keyerror.html')
+                try:
+                    main.bokeh_composite(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+
+                    session['menu_active'] = False  # Disable 'BACK' button
+                    session['composite_path'] = '/graph/' + filename[:-4] + '_composite' + '.html'
+                    return redirect('/graph/' + filename[:-4] + '_composite' + '.html')
+
+                except KeyError:
+                    return redirect('/static/keyerror.html')
 
         return redirect("/")
 
