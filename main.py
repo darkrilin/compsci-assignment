@@ -21,7 +21,6 @@ def extract_matlab(filename):
     - ******_rec03.mat
     - ******_rec03_all.mat
     - ******_rec03_f**.mat
-
     '''
     file = sio.loadmat(filename)
     wave_key = ""
@@ -37,10 +36,10 @@ def extract_matlab(filename):
         raise KeyError("Can't find the schmitt wave data")
 
     # Extract data using keys
-    file_comments  = file[ wave_key ][0][0][1][0]
-    wave_timestamp = file[ wave_key ][0][0][4]  # Neuron pop - milliseconds since trigger
-    stim_timestamp = file[ trig_key ][0][0][4]  # Stimulus time into experiment - seconds
-    stim_amplitude = file[ trig_key ][0][0][5]  # Amplitude of particular stimulus time
+    file_comments  = file[wave_key][0][0][1][0]
+    wave_timestamp = file[wave_key][0][0][4]  # Neuron pop - milliseconds since trigger
+    stim_timestamp = file[trig_key][0][0][4]  # Stimulus time into experiment - seconds
+    stim_amplitude = file[trig_key][0][0][5]  # Amplitude of particular stimulus time
 
     raw_values = []
     assorted_values = []
@@ -94,7 +93,7 @@ def vals_to_coords(vals):
     n = []
 
     for i in vals:
-        if i == None:  # end row
+        if not i:  # end row
             values += [n]
             n = []
         else:
@@ -127,9 +126,10 @@ def bokeh_scatter(filename, auto_open=True, colour="black"):
             x.append(i[0])
             y.append(i[1]-1)
 
-        TOOLS = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo,reset,tap,save,box_select,poly_select,lasso_select,"
+        tools = "hover,crosshair,pan,wheel_zoom,zoom_in,zoom_out,box_zoom,undo,redo, \
+                 reset,tap,save,box_select,poly_select,lasso_select,"
 
-        p = figure(tools=TOOLS, title="Scatter Plot: " + file[file.find('/')+1::])
+        p = figure(tools=tools, title="Scatter Plot: " + file[file.find('/')+1::])
         p.scatter(x, y, radius=0.1, fill_alpha=0.8, line_color=None, color=colour)
 
         p.sizing_mode = "stretch_both"
@@ -189,10 +189,9 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
             names=["dots"]
         )
 
-
         # GENERATE PLOT WITH CUSTOM PROPERTIES
-        TOOLS = [Hover, CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
-        p = figure(tools=TOOLS, title="Composite Plot: " + file[file.find('/') + 1::], plot_width=50, plot_height=10)
+        tools = [Hover, CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
+        p = figure(tools=tools, title="Composite Plot: " + file[file.find('/') + 1::], plot_width=50, plot_height=10)
 
         p.sizing_mode = "stretch_both"
         p.border_fill_color = "whitesmoke"
@@ -204,7 +203,6 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
         p.yaxis.axis_label = "Amplitude"
         p.width = 160
         p.height = 70
-
 
         # ADD HEATMAP
         raw = np.zeros((h, w))
@@ -229,15 +227,12 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
         # Render image
         image = p.image(image=[raw], x=0, y=0, dw=50, dh=10, palette=bokehpalette)#"Inferno256")#"YlOrBr9")
 
-
         # ADD SCATTER MAP
         scatter = p.scatter('x', 'y', radius=0.07, fill_alpha=0.8, line_color=None, color=colour, source=source, name="dots")
-
 
         # ADD AMPLITUDE LINES
         for i in range(11):
             p.line((0, 50), (i, i), color=colour, alpha=0.5)
-
 
         # ADD WIDGETS TO TOGGLE VISIBILITY OF LAYERS
         toggle_image = Button(
@@ -252,12 +247,10 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
         toggle_scatter.js_on_click(CustomJS(args=dict(scatter=scatter),
                                           code="scatter.visible=!scatter.visible"))
 
-
         # SAVE AND SHOW PLOT
         name = file.replace('.mat', '') + '_composite.html'
         title = "Composite Plot: " + file[file.find('/') + 1::]
         output_file(name, title)
-
 
         # OPEN / SHOW
         doc_layout = column(

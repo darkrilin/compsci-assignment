@@ -7,6 +7,14 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript">
+
+        $(window).on('pageshow', function() {
+            // Hide the upload and grey box when loading the page
+            // works even on back button press
+            $("#uploadbox").hide();
+            $("#greyout").hide();
+        });
+
         // jQuery Ready Up
         $(document).ready(function(){
             // jQuery code goes here
@@ -43,10 +51,6 @@
             $(".submitbtn").on("click", function(){
                 if($("#theFile").get(0).files.length != 0){
                     if(allowed_file($("#theFile").get(0).files[0].name)){
-
-                        /*for (var i=0, f; f = $("#theFile").get(0).files[i]; i++) {
-                            alert(f.name)
-                        }*/
                         $("#uploadbox").show();
                         $("#greyout").show();
                         $("#target").submit();

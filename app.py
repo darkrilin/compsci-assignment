@@ -38,42 +38,50 @@ def upload_file():
             print("Redirecting to request URL")
             return redirect(request.url)
 
-        #file = request.files['file']
+        # get list of files sent through from jquery
         uploaded_files = request.files.getlist("file")
-        print(uploaded_files)
-
 
         if (len(uploaded_files)) == 0:
             print("Redirecting to request URL")
             return redirect(request.url)
 
+        # loop through and save all uploaded files
+        files_to_process = []
 
-        for file in uploaded_files:
-            print(file.filename)
+        for each_file in uploaded_files:
 
-            # TODO: LOOP THROUGH FILES, SAVE EACH INDIVIDUAL ONE
-            # TODO: THEN PASS THROUGH A LIST OF FILES TO BE PROCESSED BY PYTHON
-
-            if file and allowed_file(file.filename):
-                filename = secure_filename(file.filename)
+            if each_file and allowed_file(each_file.filename):
+                filename = secure_filename(each_file.filename)
 
                 try:
                     ensure_dir(app.config['UPLOAD_FOLDER'])
-                    file.save(app.config['UPLOAD_FOLDER'] + filename)
-
+                    each_file.save(app.config['UPLOAD_FOLDER'] + filename)
+                    files_to_process.append(filename)
                 except PermissionError:
-                    return redirect('/static/uploaderror.html')
+                    return redirect('/static/upload_error.html')
 
-                try:
-                    main.bokeh_composite(app.config['UPLOAD_FOLDER'] + filename, auto_open=False)
+        # now do the processing
+        if len(files_to_process) == 0:
+            # redirect if none of the files are uploaded correctly
+            return redirect('/static/upload_error.html')
 
-                    session['menu_active'] = False  # Disable 'BACK' button
-                    session['composite_path'] = '/graph/' + filename[:-4] + '_composite' + '.html'
-                    return redirect('/graph/' + filename[:-4] + '_composite' + '.html')
+        elif len(files_to_process) == 1:
+            # only one file selected, graph normally
+            current_file = files_to_process[0]
+            try:
+                main.bokeh_composite(app.config['UPLOAD_FOLDER'] + current_file, auto_open=False)
+                session['composite_path'] = '/graph/' + current_file[:-4] + '_composite' + '.html'
+                return redirect('/graph/' + current_file[:-4] + '_composite' + '.html')
+            except KeyError:
+                return redirect('/static/key_error.html')
 
-                except KeyError:
-                    return redirect('/static/keyerror.html')
+        elif len(files_to_process) > 1:
+            # graph all files into same document
+            print(files_to_process)
 
+            # TODO: CREATE FUNCTION IN main.py WHICH HANDLES MULTIPLE GRAPH FILES
+
+        # fail safe
         return redirect("/")
 
 
@@ -89,19 +97,9 @@ def graph_file(filename):
     except Exception as ex:
         print(ex)
         return redirect('/')
+
     file_html = file.read()
     file.close()
-    if session['menu_active']:
-        start_index = file_html.find('<body>') + len('<body>')
-        sub = '<button id="back" style="z-index:1000;position:absolute;background-color: #447bdc;color: white; \
-                padding: 14px;font-size: 16px;border: none;cursor: pointer;min-width: 300px;min-height: 50px; \
-                margin-left:auto;margin-right:auto;border-radius: 5px;text-transform: uppercase;">Back</button> \
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
-        file_html = insert_substring(file_html, sub, start_index)
-
-        start_index = file_html.find('<script type="text/javascript">') + len('<script type="text/javascript">')
-        sub = '$(document).ready(function(){$("#back").click(function(){window.location.replace("/select");});});'
-        file_html = insert_substring(file_html, sub, start_index)
     return file_html
 
 
