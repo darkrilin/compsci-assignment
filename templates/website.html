@@ -66,22 +66,22 @@
                     <div style="display:inline-block;">
                         <div>
                             <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100;">
-                                <button class="importbtn" style="">Import MATLAB File</button>
+                                <button class="importbtn" style="">Import MATLAB File(s)</button>
                             </div>
                         </div>
                         <div style="position:relative; text-align:center;">
-                            <p id="filename">No file chosen</p>
+                            <p id="filename">No files chosen</p>
                         </div>
                     </div>
                 </div>
                 <div style="position:relative; left:50%; transform:translate(-50%, 0); z-index:100; top:50px;">
-                    <button class="submitbtn" style="">Generate Chart</button>
+                    <button class="submitbtn" style="">Generate</button>
                 </div>
             </div>
         </div>
     </div>
     <form id="target" action="/upload" enctype="multipart/form-data" method="post">
-        <input id="theFile" name="file" type="file" accept=".mat" style="position: fixed; top: -100em">
+        <input id="theFile" name="file" type="file" accept=".mat" style="position: fixed; top: -100em" multiple>
     </form>
     <div id="footer">
 		<p>© Riley Taylor and William Stark, 2016-2018.</p>
