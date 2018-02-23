@@ -145,3 +145,5 @@ $RECYCLE.BIN/
 # CUSTOM
 temp/
 .idea/
+static/graphs/
+uploads/
