@@ -107,7 +107,173 @@ def vals_to_coords(vals):
     return coords
 
 
-# Main plotting functions (call this from other code)
+# Graphing and plotting functions
+def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=False,
+                   hm_width=250, hm_height=125, hm_radius=10, widgets=False):
+
+    # Initialise basic plot data
+    plot_title = "Plot: "
+    scatter_plot = None
+    heatmap_plot = None
+    toggle_scatter = None
+    toggle_heatmap = None
+
+    if (extracted_file == None and raw_file != ""):
+        extracted_file = extract_matlab(raw_file)
+
+    coordinates = vals_to_coords(extracted_file)
+    tools = [CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
+
+    print("data size: " + str(len(coordinates)))
+
+    # Process individual data points
+    n = []
+    x = []
+    y = []
+    for i in coordinates:
+        n.append(floor(i[1]))
+        x.append(i[0])
+        y.append(i[1] - 1)
+
+    # Configure hovertext for individual data points
+    data_source = ColumnDataSource(data=dict(
+        x=x,
+        y=y,
+        time=x,
+        amp=n
+    ))
+
+    Hover = HoverTool(
+        tooltips=[
+            ("time", "@time ms"),
+            ("amplitude", "@amp")
+        ],
+        names=["dots"]
+    )
+    tools.append(Hover)
+
+    # Determine plot title
+    if (scatter and heatmap):
+        plot_title = "Composite Plot: "
+    elif (scatter):
+        plot_title = "Scatter Plot: "
+    elif (heatmap):
+        plot_title = "Heatmap Plot: "
+
+    # Initialise plot figure
+    p = figure(tools=tools, title=plot_title + raw_file.split("/")[-1], plot_width=50, plot_height=10)
+
+    p.sizing_mode = "stretch_both"
+    p.border_fill_color = "whitesmoke"
+    p.min_border_left = 40
+    p.min_border_right = 40
+    p.min_border_bottom = 50
+    p.min_border_top = 20
+    p.xaxis.axis_label = "Time (ms)"
+    p.yaxis.axis_label = "Amplitude"
+    p.width = 160
+    p.height = 70
+
+    # Add graphs to plot -- note: the order is important for layering
+    if heatmap:
+        heatmap_plot = add_heatmap(p, coordinates, w=hm_width, h=hm_height, radius=hm_radius)
+    if scatter:
+        scatter_plot = add_scatter(p, x, y, radius=0.06, source=data_source, name="dots")
+
+    # Add amplitude lines to plot
+    for i in range(11):
+        p.line((0, 50), (i, i), color="black", alpha=0.5)
+
+    # Widgets to toggle visibility of layers
+    if widgets:
+        if scatter:
+            toggle_scatter = Button(
+                label="Toggle Scatter Plot")
+            toggle_scatter.width = 100
+            toggle_scatter.js_on_click(CustomJS(args=dict(scatter_plot=scatter_plot),
+                                                code="scatter_plot.visible=!scatter_plot.visible"))
+        if heatmap:
+            toggle_heatmap = Button(
+                label="Toggle Heatmap")
+            toggle_heatmap.width = 100
+            toggle_heatmap.js_on_click(CustomJS(args=dict(heatmap_plot=heatmap_plot),
+                                              code="heatmap_plot.visible=!heatmap_plot.visible"))
+
+    # Return plot w/ widgets
+    return p, toggle_scatter, toggle_heatmap
+
+
+def add_scatter(p, x, y, radius=0.1, fill_alpha=0.8, line_color=None, color="black", source=None, name=""):
+    if source != None:
+        scatter = p.scatter(x, y, radius=radius, fill_alpha=fill_alpha, line_color=line_color, color=color, name=name)
+    else:
+        scatter = p.scatter(x, y, radius=radius, fill_alpha=fill_alpha, line_color=line_color, color=color, name=name)
+    return scatter
+
+
+def add_heatmap(p, coordinates, w=500, h=250, radius=10):
+    # TODO: OPTIMISE THE CIRCLE CODE (there has to be a quicker way)
+    raw = np.zeros((h, w))
+
+    # Plot circles
+    for pos in coordinates:
+        x_pos = floor((pos[1] - 1) / 10 * h)
+        y_pos = floor(pos[0] / 50 * w)
+        for i in range(-radius, radius + 1):
+            for j in range(-radius, radius + 1):
+                x_pos_2 = x_pos + i
+                y_pos_2 = y_pos + j
+                if x_pos_2 >= 0 and x_pos_2 < h:
+                    if y_pos_2 >= 0 and y_pos_2 < w:
+                        if i * i + j * j < radius * radius:
+                            raw[x_pos_2, y_pos_2] += 1
+
+    # Generate colour map
+    colormap = cm.get_cmap("RdPu")
+    bokeh_palette = [plt.colors.rgb2hex(m) for m in colormap(np.arange(colormap.N))]
+
+    # Render image
+    heatmap = p.image(image=[raw], x=0, y=0, dw=50, dh=10, palette=bokeh_palette)
+    return heatmap
+
+
+# Plotting for the website
+def graph_single(file_name, widgets=True, width=500, height=250, radius=10, auto_open=True, dir=""):
+    plot = generate_graph(raw_file=file_name, scatter=True, heatmap=True,
+                          hm_width=width, hm_height=height, hm_radius=radius, widgets=widgets)
+
+    file_dir = file_name.split("/")[0]
+    file_name = file_name.split("/")[-1]
+
+    if dir != "":
+        file_dir = dir
+        print(file_dir)
+
+    name = file_dir + file_name.replace('.mat', '') + '.html'
+    print(name)
+    title = "Composite Plot: " + file_name
+    output_file(name, title)
+
+    show_me = plot[0]
+
+    if widgets:
+        doc_layout = column(
+            [plot[0],
+             row([widgetbox([plot[1], plot[2]], width=10)], height=50, sizing_mode="fixed")],
+            sizing_mode="scale_width")
+        show_me = doc_layout
+
+    if auto_open:
+        show(show_me)
+    else:
+        save(show_me)
+
+
+def graph_multiple(file_names, scatter=True, heatmap=True, auto_open=False):
+    pass
+
+
+"""
 def bokeh_scatter(filename, auto_open=True, colour="black"):
 
     if type(filename) is not list:
@@ -191,7 +357,7 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
 
         # GENERATE PLOT WITH CUSTOM PROPERTIES
         tools = [Hover, CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
-        p = figure(tools=tools, title="Composite Plot: " + file[file.find('/') + 1::], plot_width=50, plot_height=10)
+        p = figure(tools=tools, title="Composite Plot: " + file.split("/")[-1], plot_width=50, plot_height=10)
 
         p.sizing_mode = "stretch_both"
         p.border_fill_color = "whitesmoke"
@@ -207,7 +373,7 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
         # ADD HEATMAP
         raw = np.zeros((h, w))
 
-        # TODO: CLEAN UP CIRCLE CODE, OPTIMISE THE SHIT OUT OF IT
+        # TODO: CLEAN UP CIRCLE CODE
         for pos in coordinates:
             x_pos = floor((pos[1]-1)/10*h)
             y_pos = floor(pos[0]/50*w)
@@ -262,9 +428,7 @@ def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radi
             show(doc_layout)
         else:
             save(doc_layout)
-
-
-
+"""
 
 
 # --- TEMPORARY TESTING CODE; REMOVE IN FINAL BUILD --- #
@@ -272,5 +436,4 @@ if __name__ == '__main__':
     print("Make sure you're running app.py if you want the web interface")
     print("This code is just for debugging functions")
 
-    #bokeh_scatter('temp/659607_rec03_all.mat')
-    #bokeh_composite('temp/659607_rec03_all.mat')
+    graph_single("temp/659607_rec03_all.mat", widgets=True, width=500, height=200, radius=9)
