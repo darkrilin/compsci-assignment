@@ -243,7 +243,7 @@ def graph_single(file_name, widgets=True, width=500, height=250, radius=10, auto
                           hm_width=width, hm_height=height, hm_radius=radius, widgets=widgets)
 
     output_layout = plot[0]
-    file_dir = file_name.split("/")[0]
+    file_dir = file_name.split("/")[0] + "/"
     file_name = file_name.split("/")[-1]
 
     if dir != "":
