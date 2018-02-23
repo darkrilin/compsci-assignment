@@ -90,11 +90,13 @@ def upload_file():
 
 
 @app.route('/output')
+@app.route('/output/')
 def output_graph():
     return redirect(session['output_path'])
 
 
 @app.route('/example')
+@app.route('/example/')
 def example():
     return redirect("example.html")
 
