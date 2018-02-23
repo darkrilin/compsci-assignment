@@ -242,31 +242,28 @@ def graph_single(file_name, widgets=True, width=500, height=250, radius=10, auto
     plot = generate_graph(raw_file=file_name, scatter=True, heatmap=True,
                           hm_width=width, hm_height=height, hm_radius=radius, widgets=widgets)
 
+    output_layout = plot[0]
     file_dir = file_name.split("/")[0]
     file_name = file_name.split("/")[-1]
 
     if dir != "":
         file_dir = dir
-        print(file_dir)
 
     name = file_dir + file_name.replace('.mat', '') + '.html'
-    print(name)
     title = "Composite Plot: " + file_name
     output_file(name, title)
-
-    show_me = plot[0]
 
     if widgets:
         doc_layout = column(
             [plot[0],
              row([widgetbox([plot[1], plot[2]], width=10)], height=50, sizing_mode="fixed")],
             sizing_mode="scale_width")
-        show_me = doc_layout
+        output_layout = doc_layout
 
     if auto_open:
-        show(show_me)
+        show(output_layout)
     else:
-        save(show_me)
+        save(output_layout)
 
 
 def graph_multiple(file_names, scatter=True, heatmap=True, auto_open=False):
