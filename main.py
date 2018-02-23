@@ -267,11 +267,14 @@ def graph_single(file_name, widgets=True, width=500, height=250, radius=10, auto
 
 
 def graph_multiple(file_names, scatter=True, heatmap=True, auto_open=False):
+    if __name__ == '__main__':
+        print("Hey, why are you using graph_multiple? It doesn't do anything yet!")
     pass
 
 
 """
 def bokeh_scatter(filename, auto_open=True, colour="black"):
+    raise DeprecationWarning
 
     if type(filename) is not list:
         filename = [filename]
@@ -317,6 +320,7 @@ def bokeh_scatter(filename, auto_open=True, colour="black"):
 
 
 def bokeh_composite(filename, auto_open=True, colour="black", w=500, h=250, radius=10):
+    raise DeprecationWarning
 
     if type(filename) is not list:
         filename = [filename]
