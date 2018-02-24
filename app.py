@@ -77,9 +77,11 @@ def upload_file():
 
         elif len(files_to_process) > 1:
             # graph all files into same document
-            main.graph_multiple(files_to_process, scatter=True, heatmap=True, auto_open=False)
-            print(files_to_process)
-            # TODO: CREATE FUNCTION IN main.py WHICH HANDLES MULTIPLE GRAPH FILES
+            try:
+                path = main.graph_multiple(files_to_process, auto_open=False, ncols=2, dir=static_path)
+                session['output_path'] = os_path_join('/graphs/' + path)
+            except KeyError:
+                return redirect('/key_error.html')
 
         # clean up temp files
         for file in files_to_process:
