@@ -103,6 +103,12 @@ def example():
     return redirect("example.html")
 
 
+@app.route('/example2')
+@app.route('/example2/')
+def example2():
+    return redirect("example2.html")
+
+
 def insert_substring(main_string, substring, index):
     return main_string[:index] + substring + main_string[index:]
 
@@ -111,7 +117,6 @@ app.secret_key = os_environ.get('SECRET_KEY', None)
 if app.secret_key is None:
     print("Secret key not found. Exiting app.")
     exit()
-
 else:
     if HEROKU:
         PORT = int(os_environ.get('PORT', 5000))
