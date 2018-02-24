@@ -116,8 +116,6 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
         extracted_file = extract_matlab(raw_file)
 
     coordinates = vals_to_coords(extracted_file)
-    tools = [CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
-
     print("data size: " + str(len(coordinates)))
 
     # Process individual data points
@@ -136,7 +134,6 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
         time=x,
         amp=n
     ))
-
     Hover = HoverTool(
         tooltips=[
             ("time", "@time ms"),
@@ -144,7 +141,6 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
         ],
         names=["dots"]
     )
-    tools.append(Hover)
 
     # Determine plot title
     if (scatter and heatmap):
@@ -155,6 +151,7 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
         plot_title = "Heatmap Plot: "
 
     # Initialise plot figure
+    tools = [Hover, CrosshairTool(), PanTool(), WheelZoomTool(), ResetTool(), SaveTool()]
     p = figure(tools=tools, title=plot_title + raw_file.split("/")[-1], plot_width=50, plot_height=10)
 
     p.sizing_mode = "stretch_both"
@@ -172,7 +169,8 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
     if heatmap:
         heatmap_plot = add_heatmap(p, coordinates, w=hm_width, h=hm_height, radius=hm_radius)
     if scatter:
-        scatter_plot = add_scatter(p, x, y, radius=dot_size, source=data_source, name="dots")
+        scatter_plot = p.scatter('x', 'y', radius=dot_size, fill_alpha=0.8,
+                                 line_color=None, color="black", source=data_source, name='dots')
 
     # Add amplitude lines to plot
     for i in range(11):
@@ -195,14 +193,6 @@ def generate_graph(extracted_file=None, raw_file="", scatter=False, heatmap=Fals
 
     # Return plot w/ widgets
     return p, toggle_scatter, toggle_heatmap
-
-
-def add_scatter(p, x, y, radius=0.1, fill_alpha=0.8, line_color=None, color="black", source=None, name=""):
-    if source != None:
-        scatter = p.scatter(x, y, radius=radius, fill_alpha=fill_alpha, line_color=line_color, color=color, name=name)
-    else:
-        scatter = p.scatter(x, y, radius=radius, fill_alpha=fill_alpha, line_color=line_color, color=color, name=name)
-    return scatter
 
 
 def add_heatmap(p, coordinates, w=500, h=250, radius=10):
@@ -233,7 +223,7 @@ def add_heatmap(p, coordinates, w=500, h=250, radius=10):
 
 # Plotting for the website
 def graph_single(file_name, widgets=True, width=500, height=250, radius=10, auto_open=False, dir=""):
-    plot = generate_graph(raw_file=file_name, scatter=True, heatmap=True,
+    plot = generate_graph(raw_file=file_name, scatter=True, heatmap=True, dot_size=0.07,
                           hm_width=width, hm_height=height, hm_radius=radius, widgets=widgets)
 
     output_layout = plot[0]
@@ -275,7 +265,7 @@ def graph_multiple(file_names, width=250, height=100, radius=5, auto_open=False,
             if part not in file_name_parts:
                 file_name_parts.append(part)
 
-        p = generate_graph(raw_file=file, scatter=True, heatmap=True, dot_size=0.1,
+        p = generate_graph(raw_file=file, scatter=True, heatmap=True, dot_size=0.11,
                            hm_width=width, hm_height=height, hm_radius=radius, widgets=False)[0]
         p.min_border_bottom = 20
         p.min_border_left = 30
