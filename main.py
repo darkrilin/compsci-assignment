@@ -283,6 +283,11 @@ def graph_multiple(file_names, width=250, height=100, radius=5, auto_open=False,
         p.height = 90
         plots.append(p)
 
+
+    for i in range(ncols - (len(file_names)%ncols)):
+        plots.append(None)
+
+
     # make into nice grid
     plots_layout = []
     i = 0
