@@ -23,11 +23,15 @@ def ensure_dir(f):
         os_make_dirs(d)
 
 
-@app.before_request
-def force_https():
-    if request.endpoint in app.view_functions and not request.is_secure and HEROKU:
-        if request.url.startswith('http://'):
-            return redirect(request.url.replace('http://', 'https://'))
+# Attempting to force HTTPS upon the user seems to result in a redirect error
+# I'll fix this later, luckily none of the data on the site _needs_ HTTPS, but it'd be nice,
+# and they can always access a secure page if they add https to the beginning manually
+#
+#@app.before_request
+#def force_https():
+#    if request.endpoint in app.view_functions and not request.is_secure and HEROKU:
+#        if request.url.startswith('http://'):
+#            return redirect(request.url.replace('http://', 'https://'))
 
 @app.after_request
 def add_header(response):
