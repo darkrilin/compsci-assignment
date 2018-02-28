@@ -26,7 +26,8 @@ def ensure_dir(f):
 @app.before_request
 def force_https():
     if request.endpoint in app.view_functions and not request.is_secure and HEROKU:
-        return redirect(request.url.replace('http://', 'https://'))
+        if request.url.startswith('http://'):
+            return redirect(request.url.replace('http://', 'https://'))
 
 @app.after_request
 def add_header(response):
